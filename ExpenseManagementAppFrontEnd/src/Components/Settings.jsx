@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Avatar, Button, TextField, Card, CardContent } from "@mui/material";
 
-export default function SettingsPage() {
+export default function Settings() {
     const [avatar, setAvatar] = useState(null);
     const [formData, setFormData] = useState({
         firstName: "",

@@ -26,8 +26,9 @@ const RevenuePage = () => {
         const getRevenue = async () => {
             try {
                 console.log("Fetching revenue for account ID:", id);
+
                 const resp = await axios.get(`http://localhost:8080/api/v1/revenue?accountId=${id}`);
-                console.log(resp)
+
 
                 const RevenueWithUnIds = resp.data.map((revenue) => ({
                     id: uuidv4(),
@@ -50,8 +51,8 @@ const RevenuePage = () => {
 
         const NewRevenue = newRevenue;
         try {
-            console.log(newRevenue);
             const response = await axios.post("http://localhost:8080/api/v1/revenue/add", newRevenue);
+            console.log(response)
 
             const addedRevenue = { id: uuidv4(), ...newRevenue };
             setRevenues([...revenues, addedRevenue]);
@@ -60,10 +61,8 @@ const RevenuePage = () => {
             console.error("Error adding new revenue:", error);
         }
 
-
-
         setShowModal(false);
-        setNewRevenue({ accountId : id,ParentCategoryName: "", SubCategoryName: "", amount: "", date: ""});
+        setNewRevenue({ accountId : id,ParentCategoryName: "", SubCategoryName: "", amount: "", date: "" });
     };
 
     return (
@@ -97,7 +96,7 @@ const RevenuePage = () => {
                                         <TableCell>{revenue.ParentCategoryName}</TableCell>
                                         <TableCell>{revenue.SubCategoryName || "-"}</TableCell>
                                         <TableCell>{revenue.amount}</TableCell>
-                                        <TableCell>{new Date(revenue.date).toLocaleDateString() || "-"}</TableCell>
+                                        <TableCell>{new Date(revenue.date).toLocaleDateString()}</TableCell>
                                     </TableRow>
                                 );
                             })}
@@ -155,8 +154,8 @@ const RevenuePage = () => {
                         variant="outlined"
                         fullWidth
                         type="date"
-                        value={newRevenue.date.split("T")[0]}
-                        onChange={(e) => handleChange("date", new Date(e.target.value).toISOString() )}
+                        value={newRevenue.date}
+                        onChange={(e) => handleChange("date", e.target.value)}
                         sx={{ mb: 2 }}
                         InputLabelProps={{
                             shrink: true,

@@ -1,66 +1,39 @@
-import { useEffect, useState } from "react";
-import { Button, TextField, Modal, Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Divider } from "@mui/material";
-import { v4 as uuidv4 } from "uuid";
+
+import {useEffect, useState} from "react";
+import { Button, TextField, Modal, Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 import axios from "axios";
 
 const ExpensePage = () => {
-    const id = localStorage.getItem("accountId");
     const [expenses, setExpenses] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [newExpense, setNewExpense] = useState({
-        accountId: id,
-        ParentCategoryName: "",
-        SubCategoryName: "",
+        name: "",
+        category: "",
+        subCategory: "",
         amount: "",
         date: "",
     });
-    const [refresh, setRefresh] = useState(false);
 
-    // Fetch Expenses
-    useEffect(() => {
-        const getExpenses = async () => {
-            try {
-
-                const response = await axios.get(`http://localhost:8080/api/v1/expense?accountId=${id}`);
-
-                const expensesWithIds = response.data.map((expense) => ({
-                    id: uuidv4(),
-                    ...expense
-                }));
-
-                setExpenses(expensesWithIds);
-
-                console.log("Fetched Expenses:", expensesWithIds);
-            } catch (error) {
-                console.error("Error fetching expenses:", error);
-            }
-        };
-
-        getExpenses();
-    }, [refresh, id]);
-
-    // Handle input change inside modal
     const handleChange = (field, value) => {
         setNewExpense({ ...newExpense, [field]: value });
     };
 
-    // Handle adding a new expense
-    const handleAddExpense = async () => {
-        try {
-            console.log(newExpense);
-            await axios.post("http://localhost:8080/api/v1/expense/add", newExpense);
-            const ResponseWithUnID = { id: uuidv4(), ...newExpense };
 
-            setExpenses([...expenses, ResponseWithUnID]);
-            setRefresh(prev => !prev);
-        } catch (error) {
-            console.error("Error adding new expense:", error);
-        }
+    const handleAddExpense = () => {
+        setExpenses([...expenses, { id: expenses.length + 1, serialNo: expenses.length + 1, ...newExpense }]);
+        console.log(expenses[0]["name"])
+        setShowModal(false); // Close modal after adding
+        setNewExpense({ name: "", category: "", subCategory: "", amount: "", date: "" }); // Reset form
 
-        setShowModal(false);
-        setNewExpense({ accountId: id, ParentCategoryName: "", SubCategoryName: "", amount: "", date: ""});
     };
 
+    // useEffect(async () => {
+    //     const response = await axios.get("http://localhost:8080/api/v1/Expense").then(
+    //         resp => {
+    //             response = response.json();
+    //         }
+    //     )
+    // }, [expenses]);
     return (
         <div style={{ padding: "20px", maxWidth: "900px", margin: "auto" }}>
             {/* Header Section with Proper Alignment */}
@@ -76,6 +49,7 @@ const ExpensePage = () => {
                         <TableHead>
                             <TableRow>
                                 <TableCell>S.No</TableCell>
+                                <TableCell>Name</TableCell>
                                 <TableCell>Category</TableCell>
                                 <TableCell>Sub-Category</TableCell>
                                 <TableCell>Amount</TableCell>
@@ -83,18 +57,16 @@ const ExpensePage = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {expenses.map((expense, index) => {
-
-                                return (
-                                    <TableRow key={expense.id}>
-                                        <TableCell>{index + 1}</TableCell>
-                                        <TableCell>{expense.ParentCategoryName}</TableCell>
-                                        <TableCell>{expense.SubCategoryName || "-"}</TableCell>
-                                        <TableCell>{expense.amount}</TableCell>
-                                        <TableCell>{new Date(expense.date).toLocaleDateString() || "-"}</TableCell>
-                                    </TableRow>
-                                );
-                            })}
+                            {expenses.map((expense) => (
+                                <TableRow key={expense.id}>
+                                    <TableCell>{expense.serialNo}</TableCell>
+                                    <TableCell>{expense.name}</TableCell>
+                                    <TableCell>{expense.category}</TableCell>
+                                    <TableCell>{expense.subCategory}</TableCell>
+                                    <TableCell>{expense.amount}</TableCell>
+                                    <TableCell>{expense.date}</TableCell>
+                                </TableRow>
+                            ))}
                         </TableBody>
                     </Table>
                 </TableContainer>
@@ -119,21 +91,28 @@ const ExpensePage = () => {
                     boxShadow: 24
                 }}>
                     <Typography variant="h6" gutterBottom>Add Expense</Typography>
-                    <Divider sx={{ mb: 2 }} />
+                    <TextField
+                        label="Name"
+                        variant="outlined"
+                        fullWidth
+                        value={newExpense.name}
+                        onChange={(e) => handleChange("name", e.target.value)}
+                        sx={{ mb: 2 }}
+                    />
                     <TextField
                         label="Category"
                         variant="outlined"
                         fullWidth
-                        value={newExpense.ParentCategoryName}
-                        onChange={(e) => handleChange("ParentCategoryName", e.target.value)}
+                        value={newExpense.category}
+                        onChange={(e) => handleChange("category", e.target.value)}
                         sx={{ mb: 2 }}
                     />
                     <TextField
                         label="Sub-Category"
                         variant="outlined"
                         fullWidth
-                        value={newExpense.SubCategoryName}
-                        onChange={(e) => handleChange("SubCategoryName", e.target.value)}
+                        value={newExpense.subCategory}
+                        onChange={(e) => handleChange("subCategory", e.target.value)}
                         sx={{ mb: 2 }}
                     />
                     <TextField
@@ -150,8 +129,8 @@ const ExpensePage = () => {
                         variant="outlined"
                         fullWidth
                         type="date"
-                        value={newExpense.date.split("T")[0]}
-                        onChange={(e) => handleChange("date", new Date(e.target.value).toISOString())}
+                        value={newExpense.date}
+                        onChange={(e) => handleChange("date", e.target.value)}
                         sx={{ mb: 2 }}
                         InputLabelProps={{
                             shrink: true,
