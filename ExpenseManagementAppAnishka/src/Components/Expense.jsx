@@ -1,87 +1,55 @@
+
 import {useEffect, useState} from "react";
 import { Button, TextField, Modal, Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
-import "./Navbar.jsx";
-import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 
-const RevenuePage = () => {
-    const id =  localStorage.getItem("accountId");
-    const [revenues, setRevenues] = useState([]);
+const ExpensePage = () => {
+    const [expenses, setExpenses] = useState([]);
     const [showModal, setShowModal] = useState(false);
-    const [newRevenue, setNewRevenue] = useState({
-        accountId : id,
-        ParentCategoryName: "",
-        SubCategoryName: "",
+    const [newExpense, setNewExpense] = useState({
+        name: "",
+        category: "",
+        subCategory: "",
         amount: "",
         date: "",
     });
-    const [refresh, setRefresh] = useState(false);
 
-    // Handle input change inside modal
     const handleChange = (field, value) => {
-        setNewRevenue({ ...newRevenue, [field]: value });
+        setNewExpense({ ...newExpense, [field]: value });
     };
 
-    useEffect(() => {
-        const getRevenue = async () => {
-            try {
-                console.log("Fetching revenue for account ID:", id);
-                const resp = await axios.get(`http://localhost:8080/api/v1/revenue?accountId=${id}`);
-                console.log(resp)
 
-                const RevenueWithUnIds = resp.data.map((revenue) => ({
-                    id: uuidv4(),
-                    ...revenue
-                }));
+    const handleAddExpense = () => {
+        setExpenses([...expenses, { id: expenses.length + 1, serialNo: expenses.length + 1, ...newExpense }]);
+        console.log(expenses[0]["name"])
+        setShowModal(false); // Close modal after adding
+        setNewExpense({ name: "", category: "", subCategory: "", amount: "", date: "" }); // Reset form
 
-                setRevenues(RevenueWithUnIds);
-
-                console.log("Fetched Revenues:", RevenueWithUnIds);
-            } catch (error) {
-                console.error("Error fetching revenue:", error);
-            }
-        };
-
-        getRevenue();
-    }, [refresh,id]);
-
-    // Handle adding the new revenue
-    const handleAddRevenue = async () => {
-
-        const NewRevenue = newRevenue;
-        try {
-            console.log(newRevenue);
-            const response = await axios.post("http://localhost:8080/api/v1/revenue/add", newRevenue);
-
-            const addedRevenue = { id: uuidv4(), ...newRevenue };
-            setRevenues([...revenues, addedRevenue]);
-            setRefresh(prev => !prev);
-        } catch (error) {
-            console.error("Error adding new revenue:", error);
-        }
-
-
-
-        setShowModal(false);
-        setNewRevenue({ accountId : id,ParentCategoryName: "", SubCategoryName: "", amount: "", date: ""});
     };
 
+    // useEffect(async () => {
+    //     const response = await axios.get("http://localhost:8080/api/v1/Expense").then(
+    //         resp => {
+    //             response = response.json();
+    //         }
+    //     )
+    // }, [expenses]);
     return (
-        // <Navbar/>
         <div style={{ padding: "20px", maxWidth: "900px", margin: "auto" }}>
             {/* Header Section with Proper Alignment */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <Typography variant="h4" gutterBottom>Revenue Tracker</Typography>
-                <Button variant="contained" color="primary" onClick={() => setShowModal(true)}>Add Revenue</Button>
+                <Typography variant="h4" gutterBottom>Expense Tracker</Typography>
+                <Button variant="contained" color="primary" onClick={() => setShowModal(true)}>Add Expense</Button>
             </div>
 
-            {/* Revenue Table */}
-            {revenues.length > 0 && (
+            {/* Expense Table */}
+            {expenses.length > 0 && (
                 <TableContainer component={Paper} style={{ marginTop: "20px" }}>
                     <Table>
                         <TableHead>
                             <TableRow>
                                 <TableCell>S.No</TableCell>
+                                <TableCell>Name</TableCell>
                                 <TableCell>Category</TableCell>
                                 <TableCell>Sub-Category</TableCell>
                                 <TableCell>Amount</TableCell>
@@ -89,18 +57,16 @@ const RevenuePage = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {revenues.map((revenue, index) => {
-
-                                return (
-                                    <TableRow key={revenue.id}>
-                                        <TableCell>{index + 1}</TableCell>
-                                        <TableCell>{revenue.ParentCategoryName}</TableCell>
-                                        <TableCell>{revenue.SubCategoryName || "-"}</TableCell>
-                                        <TableCell>{revenue.amount}</TableCell>
-                                        <TableCell>{new Date(revenue.date).toLocaleDateString() || "-"}</TableCell>
-                                    </TableRow>
-                                );
-                            })}
+                            {expenses.map((expense) => (
+                                <TableRow key={expense.id}>
+                                    <TableCell>{expense.serialNo}</TableCell>
+                                    <TableCell>{expense.name}</TableCell>
+                                    <TableCell>{expense.category}</TableCell>
+                                    <TableCell>{expense.subCategory}</TableCell>
+                                    <TableCell>{expense.amount}</TableCell>
+                                    <TableCell>{expense.date}</TableCell>
+                                </TableRow>
+                            ))}
                         </TableBody>
                     </Table>
                 </TableContainer>
@@ -110,8 +76,8 @@ const RevenuePage = () => {
             <Modal
                 open={showModal}
                 onClose={() => setShowModal(false)}
-                aria-labelledby="add-revenue-modal"
-                aria-describedby="form-to-add-new-revenue"
+                aria-labelledby="add-expense-modal"
+                aria-describedby="form-to-add-new-expense"
             >
                 <Box sx={{
                     width: 400,
@@ -124,21 +90,29 @@ const RevenuePage = () => {
                     transform: "translate(-50%, -50%)",
                     boxShadow: 24
                 }}>
-                    <Typography variant="h6" gutterBottom>Add Revenue</Typography>
+                    <Typography variant="h6" gutterBottom>Add Expense</Typography>
+                    <TextField
+                        label="Name"
+                        variant="outlined"
+                        fullWidth
+                        value={newExpense.name}
+                        onChange={(e) => handleChange("name", e.target.value)}
+                        sx={{ mb: 2 }}
+                    />
                     <TextField
                         label="Category"
                         variant="outlined"
                         fullWidth
-                        value={newRevenue.ParentCategoryName}
-                        onChange={(e) => handleChange("ParentCategoryName", e.target.value)}
+                        value={newExpense.category}
+                        onChange={(e) => handleChange("category", e.target.value)}
                         sx={{ mb: 2 }}
                     />
                     <TextField
                         label="Sub-Category"
                         variant="outlined"
                         fullWidth
-                        value={newRevenue.SubCategoryName}
-                        onChange={(e) => handleChange("SubCategoryName", e.target.value)}
+                        value={newExpense.subCategory}
+                        onChange={(e) => handleChange("subCategory", e.target.value)}
                         sx={{ mb: 2 }}
                     />
                     <TextField
@@ -146,7 +120,7 @@ const RevenuePage = () => {
                         variant="outlined"
                         fullWidth
                         type="number"
-                        value={newRevenue.amount}
+                        value={newExpense.amount}
                         onChange={(e) => handleChange("amount", e.target.value)}
                         sx={{ mb: 2 }}
                     />
@@ -155,8 +129,8 @@ const RevenuePage = () => {
                         variant="outlined"
                         fullWidth
                         type="date"
-                        value={newRevenue.date.split("T")[0]}
-                        onChange={(e) => handleChange("date", new Date(e.target.value).toISOString() )}
+                        value={newExpense.date}
+                        onChange={(e) => handleChange("date", e.target.value)}
                         sx={{ mb: 2 }}
                         InputLabelProps={{
                             shrink: true,
@@ -166,7 +140,7 @@ const RevenuePage = () => {
                         <Button
                             variant="contained"
                             color="primary"
-                            onClick={handleAddRevenue}
+                            onClick={handleAddExpense}
                             sx={{ mr: 1 }}
                         >
                             Save
@@ -185,4 +159,4 @@ const RevenuePage = () => {
     );
 };
 
-export default RevenuePage;
+export default ExpensePage;

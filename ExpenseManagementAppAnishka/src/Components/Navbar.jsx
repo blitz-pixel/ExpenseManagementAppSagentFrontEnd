@@ -52,7 +52,7 @@ const Navbar = () => {
                         <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" }, justifyContent: "flex-end" }}>
                             <Button color="inherit" sx={{ marginRight: 2 }} onClick={() => navigate("/")}>Home</Button>
                             <Button color="inherit" sx={{ marginRight: 2 }} onClick={() => navigate("/Settings")}>Settings</Button>
-                            <Button color="inherit" sx={{ marginRight: 2 }} onClick={() => navigate("/Category")}>Categories</Button>
+                            <Button color="inherit" sx={{ marginRight: 2 }} onClick={() => navigate("/Categories")}>Categories</Button>
                             <Button color="inherit" sx={{ marginRight: 2 }} >Log Out</Button>
                         </Box>
                     </Toolbar>
