@@ -1,6 +1,7 @@
 import  { useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import {api} from "../Templates/axiosInstance.js";
 
 
 const Registration = () => {
@@ -17,7 +18,7 @@ const Registration = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post("http://localhost:8080/api/v1/Registration", formData);
+            const response = await  api.post("/Registration", formData);
             console.log(formData)
             console.log(response);
             alert("User register successfully");

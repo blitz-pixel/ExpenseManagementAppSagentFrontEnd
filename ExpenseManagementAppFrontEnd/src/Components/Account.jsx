@@ -7,8 +7,9 @@ function Account () {
     const location = useLocation();
     const data = location.state || {};
     // console.log(data.email);
-    const key = localStorage.getItem("token");
+    const key = localStorage.getItem("accountId");
     console.log(key);
+    console.log(localStorage.getItem("tokenExpiry"))
     const [account, setAccount] = useState({});
 
 
