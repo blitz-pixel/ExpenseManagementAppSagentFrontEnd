@@ -1,188 +1,119 @@
-import {useEffect, useState} from "react";
-import { Button, TextField, Modal, Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
-import "./Navbar.jsx";
+import { useState } from "react";
+import { Box, CircularProgress } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
-import axios from "axios";
+import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query";
+import { api } from "../Templates/axiosInstance.js";
+import TransactionFormModal from "../Templates/TransactionFormModal.jsx";
 
-const RevenuePage = () => {
-    const id =  localStorage.getItem("accountId");
-    const [revenues, setRevenues] = useState([]);
-    const [showModal, setShowModal] = useState(false);
+const id = localStorage.getItem("accountId");
+
+const Revenue= () => {
+    const queryClient = useQueryClient();
+
+    const queries = useQueries({
+        queries: [
+            {
+                queryKey: ["revenues", id],
+                queryFn: async () => {
+                    const res = await api.get(`/revenue?accountId=${id}`);
+                    return res.data || [];
+                },
+                cacheTime: 10 * 60 * 1000,
+            },
+            {
+                queryKey: ["categories", id],
+                queryFn: async () => {
+                    const res = await api.get(`/categories/specific?Id=${id}&&type=income`);
+                    // console.log(res.data);
+                    return Array.isArray(res.data)
+                        ? res.data.map((category) => ({
+                            id: uuidv4(),
+                            ...category,
+                        }))
+                        : [];
+                },
+                cacheTime: 10 * 60 * 1000,
+            },
+        ],
+    });
+
+    const revenueQuery = queries[0];
+    const categoriesQuery = queries[1];
+
+    const { data: revenues, isLoading: isLoadingRevenues, error: revenuesError } = revenueQuery;
+    const { data: categories, isLoading: isLoadingCategories, error: categoriesError } = categoriesQuery;
+
     const [newRevenue, setNewRevenue] = useState({
-        accountId : id,
+        accountId: id,
         ParentCategoryName: "",
         SubCategoryName: "",
         amount: "",
         date: "",
     });
-    const [refresh, setRefresh] = useState(false);
 
-    // Handle input change inside modal
+    const handleAddRevenue = useMutation({
+        mutationFn: async (newRevenue) => {
+            const response = await api.post("/revenue/add", newRevenue);
+            // return response.data;
+        },
+        onSuccess: () => {
+            setNewRevenue({
+                accountId: id,
+                ParentCategoryName: "",
+                SubCategoryName: "",
+                amount: "",
+                date: "",
+            });
+            queryClient.invalidateQueries(["revenues", id]);
+        },
+        onError: (error) => console.error("Error adding new revenue:", error),
+    });
+
+    const removeRevenue = useMutation({
+        mutationFn: async (uuid) => {
+            await api.delete(`/revenue/delete?id=${uuid}`)
+            // console.log(uuid);
+            // expenses.filter((expenses) => expenses.id === uuid);
+        },
+        onSuccess: () => queryClient.invalidateQueries(["revenues", id]),
+        onError: (error) => console.error("Error deleting revenue:", error),
+    });
+
     const handleChange = (field, value) => {
         setNewRevenue({ ...newRevenue, [field]: value });
     };
 
-    useEffect(() => {
-        const getRevenue = async () => {
-            try {
-                console.log("Fetching revenue for account ID:", id);
-                const resp = await axios.get(`http://localhost:8080/api/v1/revenue?accountId=${id}`);
-                console.log(resp)
+    const isLoading = isLoadingRevenues || isLoadingCategories;
+    const error = revenuesError || categoriesError || handleAddRevenue.error ||removeRevenue.error;
 
-                const RevenueWithUnIds = resp.data.map((revenue) => ({
-                    id: uuidv4(),
-                    ...revenue
-                }));
+    if (isLoading)
+        return (
+            <Box>
+                <CircularProgress />
+            </Box>
+        );
 
-                setRevenues(RevenueWithUnIds);
-
-                console.log("Fetched Revenues:", RevenueWithUnIds);
-            } catch (error) {
-                console.error("Error fetching revenue:", error);
-            }
-        };
-
-        getRevenue();
-    }, [refresh,id]);
-
-    // Handle adding the new revenue
-    const handleAddRevenue = async () => {
-
-        const NewRevenue = newRevenue;
-        try {
-            console.log(newRevenue);
-            const response = await axios.post("http://localhost:8080/api/v1/revenue/add", newRevenue);
-
-            const addedRevenue = { id: uuidv4(), ...newRevenue };
-            setRevenues([...revenues, addedRevenue]);
-            setRefresh(prev => !prev);
-        } catch (error) {
-            console.error("Error adding new revenue:", error);
-        }
-
-
-
-        setShowModal(false);
-        setNewRevenue({ accountId : id,ParentCategoryName: "", SubCategoryName: "", amount: "", date: ""});
+    const addRevenueHandler = () => {
+        handleAddRevenue.mutate(newRevenue);
     };
+    const removeRevenueHandler = (uuid) => {
+        removeRevenue.mutate(uuid);
+    }
 
     return (
-        // <Navbar/>
         <div style={{ padding: "20px", maxWidth: "900px", margin: "auto" }}>
-            {/* Header Section with Proper Alignment */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <Typography variant="h4" gutterBottom>Revenue Tracker</Typography>
-                <Button variant="contained" color="primary" onClick={() => setShowModal(true)}>Add Revenue</Button>
-            </div>
-
-            {/* Revenue Table */}
-            {revenues.length > 0 && (
-                <TableContainer component={Paper} style={{ marginTop: "20px" }}>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>S.No</TableCell>
-                                <TableCell>Category</TableCell>
-                                <TableCell>Sub-Category</TableCell>
-                                <TableCell>Amount</TableCell>
-                                <TableCell>Date Added</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {revenues.map((revenue, index) => {
-
-                                return (
-                                    <TableRow key={revenue.id}>
-                                        <TableCell>{index + 1}</TableCell>
-                                        <TableCell>{revenue.ParentCategoryName}</TableCell>
-                                        <TableCell>{revenue.SubCategoryName || "-"}</TableCell>
-                                        <TableCell>{revenue.amount}</TableCell>
-                                        <TableCell>{new Date(revenue.date).toLocaleDateString() || "-"}</TableCell>
-                                    </TableRow>
-                                );
-                            })}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-            )}
-
-            {/* Popup Modal */}
-            <Modal
-                open={showModal}
-                onClose={() => setShowModal(false)}
-                aria-labelledby="add-revenue-modal"
-                aria-describedby="form-to-add-new-revenue"
-            >
-                <Box sx={{
-                    width: 400,
-                    bgcolor: "white",
-                    borderRadius: "8px",
-                    p: 3,
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    boxShadow: 24
-                }}>
-                    <Typography variant="h6" gutterBottom>Add Revenue</Typography>
-                    <TextField
-                        label="Category"
-                        variant="outlined"
-                        fullWidth
-                        value={newRevenue.ParentCategoryName}
-                        onChange={(e) => handleChange("ParentCategoryName", e.target.value)}
-                        sx={{ mb: 2 }}
-                    />
-                    <TextField
-                        label="Sub-Category"
-                        variant="outlined"
-                        fullWidth
-                        value={newRevenue.SubCategoryName}
-                        onChange={(e) => handleChange("SubCategoryName", e.target.value)}
-                        sx={{ mb: 2 }}
-                    />
-                    <TextField
-                        label="Amount"
-                        variant="outlined"
-                        fullWidth
-                        type="number"
-                        value={newRevenue.amount}
-                        onChange={(e) => handleChange("amount", e.target.value)}
-                        sx={{ mb: 2 }}
-                    />
-                    <TextField
-                        label="Date"
-                        variant="outlined"
-                        fullWidth
-                        type="date"
-                        value={newRevenue.date.split("T")[0]}
-                        onChange={(e) => handleChange("date", new Date(e.target.value).toISOString() )}
-                        sx={{ mb: 2 }}
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                    />
-                    <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={handleAddRevenue}
-                            sx={{ mr: 1 }}
-                        >
-                            Save
-                        </Button>
-                        <Button
-                            variant="outlined"
-                            color="secondary"
-                            onClick={() => setShowModal(false)}
-                        >
-                            Cancel
-                        </Button>
-                    </div>
-                </Box>
-            </Modal>
+            {error && <div style={{ color: "red" }}>Error: {error?.message}</div>}
+            <TransactionFormModal
+                name="Revenues"
+                transaction={revenues || []}
+                removeExpense={removeRevenueHandler}
+                categories={categories || []}
+                newExpense={newRevenue}
+                handleChange={handleChange}
+                handleAddExpense={addRevenueHandler}
+            />
         </div>
     );
 };
 
-export default RevenuePage;
+export default Revenue;

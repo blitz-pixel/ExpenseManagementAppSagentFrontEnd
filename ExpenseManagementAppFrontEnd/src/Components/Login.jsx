@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import {api, saveAuthToken} from "../Templates/axiosInstance";
 import { Link, Navigate } from "react-router-dom";
 
 const Login = () => {
@@ -19,7 +20,7 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-            await axios.post("http://localhost:8080/api/v1/Login", credentials)
+            await api.post("/Login", credentials)
                 .then(response => {
                     if (response.status === 200) {
                         console.log("Login successful");
@@ -27,10 +28,9 @@ const Login = () => {
                         setRedirect(true);
                         const token = response.headers.get("X-Account-ID");
                         console.log(token);
-                        // console.log("Token get during login:"+ token);
-                        // console.log(response)
+
                         if (token) {
-                            localStorage.setItem("accountId", token);
+                            saveAuthToken(token);
 
                         } else {
                             console.warn("No token received");

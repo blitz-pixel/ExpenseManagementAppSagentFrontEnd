@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect, useReducer, useState} from "react";
 import {v4 as uuidv4, v4 as uuid4} from "uuid";
 import {
     Box,
@@ -8,221 +8,202 @@ import {
     MenuItem,
     IconButton,
     Paper,
-    Typography, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Modal,
+    Typography, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Modal, CircularProgress,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
+import {api} from "../Templates/axiosInstance.js";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+
+
+
+const accountId = localStorage.getItem("accountId") || "";
+
+const initialState = {
+    showModal: false,
+    anchorEl: null,
+    newCategory: { accountId: accountId, ParentCategoryName: "", SubCategoryName: "", type: "" },
+    error: ""
+};
+
+const reducer = (state, action) => {
+    switch (action.type) {
+        case "TOGGLE_MODAL":
+            return { ...state, showModal: !state.showModal };
+        // case "SET_REFRESH":
+        //     return { ...state, refresh: !state.refresh };
+        case "SET_ANCHOR":
+            return { ...state, anchorEl: action.payload };
+        // case "FETCH_CATEGORIES":
+        //     return { ...state, categories: action.payload };
+        case "ADD_CATEGORY":
+            return { ...state,  newCategory: { ...initialState.newCategory} };
+        // case "REMOVE_CATEGORY":
+        //     return { ...state, categories: state.categories.filter(c => c.id !== action.payload) };
+        case "SET_ERROR":
+            return { ...state, error: action.payload };
+        case "SET_NEW_CATEGORY":
+            return { ...state, newCategory: { ...state.newCategory, [action.field]: action.value } };
+        default:
+            return state;
+    }
+};
 
 const Category = () => {
-    const id = localStorage.getItem("accountId");
-    const [showModal, setShowModal] = useState(false);
-    const [refresh, setRefresh] = useState(false);
-    const [anchorEl, setAnchorEl] = useState(null);
-    const [categories, setCategories] = useState([]);
-    const [newCategory, setNewCategory] = useState({
-        accountId: id,
-        ParentCategoryName: "",
-        SubCategoryName: "",
-        type: ""
-    });
-    const isDisabled = !newCategory.ParentCategoryName || !newCategory.type;
-    const [error,setError] = useState("");
-    const handleMenuClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-
-    const addCategory = () => {
-        try {
-            setError("");
-            const response = axios.post("http://localhost:8080/api/v1/categories/add", newCategory).
-            catch(
-                response => {
-                    // console.error("Error adding new category:", response.response.data);
-                    setError(response.response.data);
-                }
-            );
-            // setNewCategory({...newCategory, id: uuid4()});
-            // setCategories([...categories, newCategory]);
-            console.log(response)
-            setNewCategory({
-                accountId: id,
-                ParentCategoryName: "",
-                SubCategoryName: "",
-                type: ""
-            });
-        } catch (error){
-            console.error("Error adding new category:", error);
+    const queryClient = useQueryClient();
+    const [category, dispatch] = useReducer(reducer, initialState);
+    const isDisabled = !category.newCategory.ParentCategoryName || !category.newCategory.type;
+    const { data : categories, isLoading : isFetchingCategory }  = useQuery({
+        queryKey: ["categories", accountId],
+        queryFn: async () => {
+            const response = await api.get(`/categories?Id=${accountId}`);
+            return (Array.isArray(response.data) ? response.data : []).map(category => ({
+                id: uuidv4(),
+                ...category
+            }));
         }
-        setShowModal(false);
-        setRefresh(prevState => !prevState);
+    })
+
+
+
+
+
+
+    const addCategory = useMutation({
+        mutationFn: async (newCategory) => {
+            const response = await api.post("categories/add", newCategory);
+            return response.data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries(["categories", accountId]);
+            dispatch({ type: "ADD_CATEGORY"});
+            dispatch({ type: "TOGGLE_MODAL" });
+        },
+        onError: (error) => {
+            console.error("Error adding new category:", error);
+            dispatch({ type: "SET_ERROR", payload: error.message});
+        }
+    });
+
+
+    const addCategoryHandler = () => {
+        dispatch({ type: "SET_ERROR", payload: "" });
+        addCategory.mutate(category.newCategory);
     };
+
+    const removeCategory = useMutation({
+        mutationFn: async ({accountId,name}) => {
+            console.log("name in func " + name)
+            const response = await api.delete(`categories/delete?Id=${accountId}&&name=${name}`);
+            return response.data
+        },
+        onSuccess: () =>{
+            queryClient.invalidateQueries([categories,accountId])
+        },
+        onError: (error) => {
+            console.error("Error adding new category:", error);
+            dispatch({ type: "SET_ERROR", payload: error.response.data});
+        }
+    })
+
+    const deleteCategoryHandler = (name) => {
+        console.log("in handle func: " + name)
+
+        return removeCategory.mutate({ accountId, name })
+    }
 
     const handleChange = (field, value) => {
-        setNewCategory({ ...newCategory, [field]: value });
-    };
-
-
-    const removeCategory = (category) => {
-        setCategories(categories.filter((c) => c !== category));
+        dispatch({ type: "SET_NEW_CATEGORY", field, value });
     };
 
     const handleMenuClose = () => {
-        setAnchorEl(null);
+        dispatch({ type: "SET_ANCHOR", payload: null });
     };
+    const isLoading = isFetchingCategory || addCategory.isPending;
+    category.error = category.error || "Error fetching Categories";
+    
 
-    useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const response = await axios.get(`http://localhost:8080/api/v1/categories?Id=${id}`);
-                console.log(response)
-                const CategoriesWithUnIds = response.data.map((revenue) => ({
-                    id: uuidv4(),
-                    ...revenue
-                }));
-                setCategories(CategoriesWithUnIds);
-            } catch (error) {
-                // console.log(response)
-                console.error("Error fetching categories:", error);
-            }
-        }
 
-        fetchCategories();
-    }, [refresh,id]);
 
+    if (isLoading)
+        return (
+            <Box>
+                <CircularProgress />
+            </Box>
+        );
     return (
         <Box sx={{ maxWidth: 400, mx: "auto", mt: 4 }}>
-            {error && <p style={{ color: "red" }}>{error}</p>}
-            <Button variant="contained" color="primary" onClick={() => setShowModal(true)}>Add Category</Button>
-            {categories.length > 0 && (
-                <TableContainer component={Paper} style={{ marginTop: "20px" }}>
+            {category.error && <Typography color="error">{category.error}</Typography>}
+            <Button variant="contained" color="primary" onClick={() => dispatch({ type: "TOGGLE_MODAL" })}>Add Category</Button>
+
+            {categories?.length > 0 && (
+                <TableContainer component={Paper} sx={{ mt: 2 }}>
                     <Table>
                         <TableHead>
                             <TableRow>
                                 <TableCell>S.No</TableCell>
                                 <TableCell>Category</TableCell>
                                 <TableCell>Parent-Category</TableCell>
-                                <TableCell sx={{ textAlign: "center" }}>Type</TableCell>
+                                <TableCell>Type</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {categories.map((category, index) => {
-                                return (
-                                    <TableRow key={category.id}>
-                                        <TableCell>{index + 1}</TableCell>
-                                        {category.SubCategoryName === "" ? (
-                                            <>
-                                                <TableCell>{category.ParentCategoryName || "-"}</TableCell>
-                                                <TableCell>-</TableCell>
-                                            </>
-                                        ) :  (
-                                            <>
-                                                <TableCell>{category.SubCategoryName}</TableCell>
-                                                <TableCell>{category.ParentCategoryName}</TableCell>
-                                            </>
-                                        )}
-                                        <TableCell>{category.type || "-"}
-
-                                            <IconButton  size="small" sx={{  padding: 0, right:"-7px" }} edge="end" onClick={() => removeCategory(category)}>
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </TableCell>
-                                    </TableRow>
-                                );
-                            })}
-
+                            {categories.map((item, index) => (
+                                <TableRow key={item.id}>
+                                    <TableCell>{index + 1}</TableCell>
+                                    <TableCell>{item.SubCategoryName || item.ParentCategoryName || "-"}</TableCell>
+                                    <TableCell>{item.SubCategoryName ? item.ParentCategoryName : "-"}</TableCell>
+                                    <TableCell>{item.type || "-"}</TableCell>
+                                    <TableCell>
+                                        <IconButton
+                                            size="small"
+                                            sx={{ padding: 0, right: "-7px" }}
+                                            edge="end"
+                                            onClick={() => {
+                                                const name = item.SubCategoryName ? item.SubCategoryName : item.ParentCategoryName;
+                                                console.log("Name selected:", name);
+                                                deleteCategoryHandler(name)
+                                                // console.log("SubCategoryName:", item.SubCategoryName);
+                                                // console.log("ParentCategoryName:", item.ParentCategoryName);
+                                            }
+                                        }
+                                        >
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
                         </TableBody>
                     </Table>
                 </TableContainer>
             )}
 
-            <Modal
-                open={showModal}
-                onClose={() => setShowModal(false)}
-                aria-labelledby="add-revenue-modal"
-                aria-describedby="form-to-add-new-revenue"
-            >
-                <Box sx={{
-                    width: 400,
-                    bgcolor: "white",
-                    borderRadius: "8px",
-                    p: 3,
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    boxShadow: 24
-                }}>
-                    <Typography variant="h6" gutterBottom>Add Revenue/Expense</Typography>
+            <Modal open={category.showModal} onClose={() => dispatch({ type: "TOGGLE_MODAL" })}>
+                <Box sx={{ width: 400, bgcolor: "white", p: 3, borderRadius: "8px", boxShadow: 24, position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}>
 
+                    <Typography variant="h6">Add Revenue/Expense</Typography>
+                    <TextField label="Category" fullWidth sx={{ mb: 2 }} value={category.newCategory.ParentCategoryName} onChange={(e) => handleChange("ParentCategoryName", e.target.value)} />
+                    <TextField label="Sub-Category" fullWidth sx={{ mb: 2 }} value={category.newCategory.SubCategoryName} onChange={(e) => handleChange("SubCategoryName", e.target.value)} />
 
-                    {/* Category Input */}
-                    <TextField
-                        required
-                        label="Category"
-                        variant="outlined"
-                        fullWidth
-                        value={newCategory.ParentCategoryName}
-                        onChange={(e) => handleChange("ParentCategoryName", e.target.value)}
-                        sx={{ mb: 2 }}
-                    />
-
-                    {/* Sub-Category Input */}
-                    <TextField
-                        label="Sub-Category"
-                        variant="outlined"
-                        fullWidth
-                        type="text"
-                        value={newCategory.SubCategoryName}
-                        onChange={(e) => handleChange("SubCategoryName", e.target.value)}
-                        sx={{ mb: 2 }}
-                    />
-                    <Button
-                        aria-describedby="type-required"
-                        variant="outlined"
-                        onClick={handleMenuClick}
-                        fullWidth
-                        sx={{ mb: 2 }}
-                    >
-                        {newCategory.type ? newCategory.type : "Select Type"}
-                        <span style={{ color: "gray", marginLeft: "5px"}}>*</span>
+                    <Button variant="outlined" fullWidth onClick={(e) => dispatch({ type: "SET_ANCHOR", payload: e.currentTarget })}>
+                        {category.newCategory.type || "Select Type"}
                     </Button>
-                    <p id="type-required" style={{ display: "none" }}>
-                        Selecting a type is required.
-                    </p>
-                    <Menu
-                        anchorEl={anchorEl}
-                        open={Boolean(anchorEl)}
-                        onClose={handleMenuClose}
-                    >
+                    <Menu anchorEl={category.anchorEl} open={Boolean(category.anchorEl)} onClose={handleMenuClose}>
                         <MenuItem onClick={() => { handleChange("type", "expense"); handleMenuClose(); }}>Expense</MenuItem>
                         <MenuItem onClick={() => { handleChange("type", "income"); handleMenuClose(); }}>Income</MenuItem>
                     </Menu>
 
-                    {/* Action Buttons */}
-                    <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={addCategory}
-                            disabled={isDisabled}
-                            // onClick={() => setShowModal(false)}
-                            sx={{ mr: 1 }}
-                        >
-                            Save
-                        </Button>
-                        <Button
-                            variant="outlined"
-                            color="secondary"
-                            onClick={() => setShowModal(false)}
-                        >
-                            Cancel
-                        </Button>
-                    </div>
+                    <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
+                        <Button variant="contained" color="primary" onClick={addCategoryHandler} disabled={isDisabled} sx={{ mr: 1 }}>Save</Button>
+                        <Button variant="outlined" onClick={() => dispatch({ type: "TOGGLE_MODAL" })}>Cancel</Button>
+                    </Box>
+
                 </Box>
             </Modal>
         </Box>
     );
 };
+
+
 
 export default Category;

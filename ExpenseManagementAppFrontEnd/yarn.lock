@@ -705,6 +705,18 @@
   resolved "https://registry.npmjs.org/@rollup/rollup-win32-x64-msvc/-/rollup-win32-x64-msvc-4.31.0.tgz"
   integrity sha512-ul8rnCsUumNln5YWwz0ted2ZHFhzhRRnkpBZ+YRuHoRAlUji9KChpOUOndY7uykrPEPXVbHLlsdo6v5yXo/TXw==
 
+"@tanstack/query-core@5.66.0":
+  version "5.66.0"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.66.0.tgz#163f670b3b4e3b3cdbff6698ad44b2edfcaed185"
+  integrity sha512-J+JeBtthiKxrpzUu7rfIPDzhscXF2p5zE/hVdrqkACBP8Yu0M96mwJ5m/8cPPYQE9aRNvXztXHlNwIh4FEeMZw==
+
+"@tanstack/react-query@^5.66.0":
+  version "5.66.0"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-5.66.0.tgz#9f7aa1b3e844ea6a0ad2ee61fccaed76e614b865"
+  integrity sha512-z3sYixFQJe8hndFnXgWu7C79ctL+pI0KAelYyW+khaNJ1m22lWrhJU2QrsTcRKMuVPtoZvfBYrTStIdKo+x0Xw==
+  dependencies:
+    "@tanstack/query-core" "5.66.0"
+
 "@types/babel__core@^7.20.5":
   version "7.20.5"
   resolved "https://registry.npmjs.org/@types/babel__core/-/babel__core-7.20.5.tgz"
@@ -1467,13 +1479,15 @@ esutils@^2.0.2:
     "@mui/styled-engine" "^6.4.0"
     "@mui/system" "^6.4.1"
     axios "^1.7.9"
-    expensemanagementappfrontend "file:../../../../Users/Family/AppData/Local/Yarn/Cache/v6/npm-expensemanagementappfrontend-0.0.0-14d305c9-3e90-4a91-aa46-983293e289fe-1738733982872/node_modules/expensemanagementappfrontend"
+    expensemanagementappfrontend "file:../../../../Users/Family/AppData/Local/Yarn/Cache/v6/npm-expensemanagementappfrontend-0.0.0-0f312777-0224-4ebc-9a6b-370bdeceef1f-1739031822612/node_modules/expensemanagementappfrontend"
     framer-motion "^12.0.11"
     jwt-decode "^4.0.0"
     lucide-react "^0.474.0"
+    prop-types "^15.8.1"
     react "^18.3.1"
     react-dom "^18.3.1"
     react-router-dom "^7.1.3"
+    uuid "^11.0.5"
 
 fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
   version "3.1.3"

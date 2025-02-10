@@ -35,7 +35,6 @@ const features = [
 
 const Home = () => {
     const theme = useTheme()
-
     return (
         <Box
             sx={{

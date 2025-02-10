@@ -2,6 +2,7 @@ import { useState } from "react";
 import { AppBar, Toolbar, Typography, Button, IconButton, Menu, MenuItem, Box, Container, Switch, FormControlLabel, Drawer, List, ListItem, ListItemText } from "@mui/material";
 import { Menu as MenuIcon } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { logout } from "./axiosInstance.js";
 
 const Navbar = () => {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -53,7 +54,13 @@ const Navbar = () => {
                             <Button color="inherit" sx={{ marginRight: 2 }} onClick={() => navigate("/")}>Home</Button>
                             <Button color="inherit" sx={{ marginRight: 2 }} onClick={() => navigate("/Settings")}>Settings</Button>
                             <Button color="inherit" sx={{ marginRight: 2 }} onClick={() => navigate("/Category")}>Categories</Button>
-                            <Button color="inherit" sx={{ marginRight: 2 }} >Log Out</Button>
+                            {localStorage.getItem("accountId") ? (
+                                <Button color="inherit" sx={{ marginRight: 2 }} onClick={() => logout()}>Log Out</Button>
+                            ) : (
+                                <Button color="inherit" sx={{ marginRight: 2 }} onClick={() => navigate("/Login")}>
+                                    Login
+                                </Button>
+                            )}
                         </Box>
                     </Toolbar>
                 </Container>
