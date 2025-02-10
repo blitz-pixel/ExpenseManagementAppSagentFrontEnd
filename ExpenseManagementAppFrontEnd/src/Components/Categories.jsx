@@ -197,7 +197,6 @@ const Category = () => {
                         <Button variant="contained" color="primary" onClick={addCategoryHandler} disabled={isDisabled} sx={{ mr: 1 }}>Save</Button>
                         <Button variant="outlined" onClick={() => dispatch({ type: "TOGGLE_MODAL" })}>Cancel</Button>
                     </Box>
-
                 </Box>
             </Modal>
         </Box>
