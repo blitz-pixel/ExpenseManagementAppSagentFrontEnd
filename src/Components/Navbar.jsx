@@ -59,11 +59,19 @@ const Navbar = () => {
                                 </Typography>
                             </Link>
                         </Box>
+<<<<<<< HEAD
                         <Box sx={{ display: "flex", gap: 2 }}>
                             <Button color="inherit" onClick={() => navigate("/")}>Home</Button>
                             <Button color="inherit" onClick={() => navigate("/Settings")}>Settings</Button>
                             <Button color="inherit" onClick={() => navigate("/Category")}>Categories</Button>
                             <Button color="inherit">Log Out</Button>
+=======
+                        <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" }, justifyContent: "flex-end" }}>
+                            <Button color="inherit" sx={{ marginRight: 2 }} onClick={() => navigate("/")}>Home</Button>
+                            <Button color="inherit" sx={{ marginRight: 2 }} onClick={() => navigate("/Settings")}>Settings</Button>
+                            <Button color="inherit" sx={{ marginRight: 2 }} onClick={() => navigate("/Categories")}>Categories</Button>
+                            <Button color="inherit" sx={{ marginRight: 2 }} >Log Out</Button>
+>>>>>>> 9dfe1cb0d18003fad444df92f8c97f1ea4a9555d
                         </Box>
                         <IconButton onClick={() => setDarkMode(!darkMode)} color="inherit">
                             {darkMode ? <Sun /> : <Moon />}

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Avatar, Button, TextField, Card, CardContent, Typography, Box } from "@mui/material";
 import { motion } from "framer-motion";
 
-export default function SettingsPage() {
+export default function Settings() {
     const [avatar, setAvatar] = useState(null);
     const [formData, setFormData] = useState({
         firstName: "",
