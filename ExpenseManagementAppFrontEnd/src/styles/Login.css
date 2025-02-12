@@ -1,0 +1,122 @@
+/* Full-page styling */
+body {
+    font-family: "Roboto", sans-serif;
+    background: linear-gradient(135deg, #000000, #2c2c2c, #5a4300, #b8860b);
+    background-size: 300% 300%;
+    animation: gradientBG 8s ease infinite;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Gradient Animation */
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Login container */
+.login-container {
+    background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    width: 400px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+/* Form heading */
+.login-form h2 {
+    color: #b8860b;
+    margin-bottom: 20px;
+}
+
+/* Input fields */
+.MuiTextField-root {
+    margin-bottom: 15px;
+}
+
+.MuiOutlinedInput-root {
+    border-radius: 6px;
+    background: white;
+}
+
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border-color: #b8860b;
+}
+
+.MuiFormHelperText-root {
+    color: red;
+}
+
+/* Login button */
+.login-btn {
+    background: #b8860b !important;
+    color: white !important;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    width: 100%;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s;
+    outline: none;
+    box-shadow: none;
+}
+
+.login-btn:hover {
+    background: #d4af37 !important;
+    transform: translateY(-2px);
+}
+
+/* Register & Forgot Password Links */
+.register-link {
+    color: #2c2c2c;
+    font-size: 14px;
+    margin-top: 15px;
+}
+
+.register-link a {
+    color: gold;
+    font-weight: bold;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.register-link a:hover {
+    color: #d4af37;
+    text-decoration: underline;
+}
+
+/* Forgot Password Link */
+.forgot-password-link {
+    display: block;
+    margin-top: 10px;
+    color: black;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.forgot-password-link:hover {
+    color: gold;
+    text-decoration: underline;
+}
+
+/* Snackbar Customization */
+.MuiSnackbar-root {
+    z-index: 1400;
+}
+
+.MuiAlert-root {
+    border-radius: 6px;
+    font-size: 14px;
+}
