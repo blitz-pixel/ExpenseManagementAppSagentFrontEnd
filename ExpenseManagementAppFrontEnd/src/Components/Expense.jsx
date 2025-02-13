@@ -45,7 +45,7 @@ const Expense = () => {
     const { data: categories, isLoading: isLoadingCategories, error: categoriesError } = categoriesQuery;
 
     const [newExpense, setNewExpense] = useState({
-        accountId: id,
+        // accountId: id,
         ParentCategoryName: "",
         SubCategoryName: "",
         amount: "",
@@ -59,7 +59,7 @@ const Expense = () => {
         },
         onSuccess: () => {
             setNewExpense({
-                accountId: id,
+                // accountId: id,
                 ParentCategoryName: "",
                 SubCategoryName: "",
                 amount: "",

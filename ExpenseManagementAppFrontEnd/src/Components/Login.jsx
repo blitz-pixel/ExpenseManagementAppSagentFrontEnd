@@ -32,19 +32,18 @@ const Login = () => {
         }
         try {
             const response = await api.post("/Login", credentials)
-            if (response.status === 200) {
-                console.log("Login successful");
-                console.log(response);
-                const token = response.headers.get("X-Account-ID");
-                console.log(token);
+            // console.log("Login successful");
+            // console.log(response);
+            const token = response.headers.get("X-Account-ID");
+            console.log(token);
 
-               if (token) {
-                    saveAuthToken(token);
-                    setRedirect(true);
-                } else {
-                   console.warn("Token error");
-               }
-            }
+           if (token) {
+                saveAuthToken(token);
+                setRedirect(true);
+            } else {
+               console.warn("Token error");
+           }
+
         } catch (err) {
             console.error(err);
             setSnackbar({ open: true, message: "Invalid email or password", severity: "error" });
@@ -68,6 +67,12 @@ const Login = () => {
     return (
         <motion.div className="login-container" initial={{ opacity: 0, y: -50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             <form onSubmit={handleSubmit} className="login-form">
+                <Snackbar
+                    open={snackbar.open}
+                    autoHideDuration={6000}
+                    onClose={handleCloseSnackbar}
+                    message={snackbar.message}
+                    severity={snackbar.severity} />
                 <h2>Login</h2>
                 <TextField
                     fullWidth
@@ -122,7 +127,6 @@ const Login = () => {
                 </p>
                 <Link to="/" className="forgot-password-link">Forgot Password?</Link>
             </form>
-            <Snackbar open={snackbar.open} autoHideDuration={6000} onClose={handleCloseSnackbar} message={snackbar.message} severity={snackbar.severity} />
         </motion.div>
     );
 };
