@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import {
     Container,
@@ -42,7 +40,7 @@ const theme = createTheme({
 
 const COLORS = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF", "#FF9F40"];
 
-const ReportPage = () => {
+const Report = () => {
     const [timeFrame, setTimeFrame] = useState("month");
     const [revenueData, setRevenueData] = useState([]);
     const [expenseData, setExpenseData] = useState([]);
@@ -159,4 +157,4 @@ const ReportPage = () => {
     );
 };
 
-export default ReportPage;
+export default Report;
