@@ -105,11 +105,11 @@ const Expense = () => {
             <TransactionFormModal
                 name="Expenses"
                 transaction={expenses || []}
-                removeExpense={removeExpenseHandler}
+                removeTransaction={removeExpenseHandler}
                 categories={categories || []}
-                newExpense={newExpense}
+                newTransaction={newExpense}
                 handleChange={handleChange}
-                handleAddExpense={addExpenseHandler}
+                handleAddTransaction={addExpenseHandler}
             />
         </div>
     );

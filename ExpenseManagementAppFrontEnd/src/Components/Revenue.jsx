@@ -25,7 +25,7 @@ const Revenue = () => {
             {
                 queryKey: ["categories", id],
                 queryFn: async () => {
-                    const res = await api.get(`/categories/specific?Id=${id}&&type=expense`);
+                    const res = await api.get(`/categories/specific?Id=${id}&&type=income`);
                     return Array.isArray(res.data)
                         ? res.data.map((category) => ({
                             id: uuidv4(),
@@ -38,10 +38,10 @@ const Revenue = () => {
         ],
     });
 
-    const expensesQuery = queries[0];
+    const revenueQuery = queries[0];
     const categoriesQuery = queries[1];
 
-    const { data: revenues, isLoading: isLoadingRevenues, error: RevenueError } = expensesQuery;
+    const { data: revenues, isLoading: isLoadingRevenues, error: RevenueError } = revenueQuery;
     const { data: categories, isLoading: isLoadingCategories, error: categoriesError } = categoriesQuery;
 
     const [newRevenue, setNewRevenue] = useState({
@@ -52,7 +52,7 @@ const Revenue = () => {
         date: "",
     });
 
-    const handleAddExpense = useMutation({
+    const handleAddRevenue = useMutation({
         mutationFn: async (newRevenue) => {
             const response = await api.post("/revenue/add", newRevenue);
             // return response.data;
@@ -70,12 +70,12 @@ const Revenue = () => {
         onError: (error) => console.error("Error adding new Revenue:", error),
     });
 
-    const removeExpense = useMutation({
+    const removeRevenue = useMutation({
         mutationFn: async (uuid) => {
             await api.delete(`/revenue/delete?uuid=${uuid}`)
         },
         onSuccess: () => queryClient.invalidateQueries(["revenues", id]),
-        onError: (error) => console.error("Error deleting expense:", error),
+        onError: (error) => console.error("Error deleting revenue:", error),
     });
 
     const handleChange = (field, value) => {
@@ -83,7 +83,7 @@ const Revenue = () => {
     };
 
     const isLoading = isLoadingRevenues || isLoadingCategories;
-    const error = RevenueError || categoriesError || handleAddExpense.error || removeExpense.error;
+    const error = RevenueError || categoriesError || handleAddRevenue.error || removeRevenue.error;
 
     if (isLoading)
         return (
@@ -93,23 +93,23 @@ const Revenue = () => {
         );
 
     const addRevenueHandler = () => {
-        handleAddExpense.mutate(newRevenue);
+        handleAddRevenue.mutate(newRevenue);
     };
     const removeRevenueHandler = (uuid) => {
-        removeExpense.mutate(uuid);
+        removeRevenue.mutate(uuid);
     }
 
     return (
         <div style={{ padding: "20px", maxWidth: "900px", margin: "auto" }}>
             {error && <div style={{ color: "red" }}>Error: {error?.message}</div>}
             <TransactionFormModal
-                name="Expenses"
+                name="Revenue"
                 transaction={revenues || []}
-                removeExpense={removeRevenueHandler}
+                removeTransaction={removeRevenueHandler}
                 categories={categories || []}
-                newExpense={newRevenue}
+                newTransaction={newRevenue}
                 handleChange={handleChange}
-                handleAddExpense={addRevenueHandler}
+                handleAddTransaction={addRevenueHandler}
             />
         </div>
     );

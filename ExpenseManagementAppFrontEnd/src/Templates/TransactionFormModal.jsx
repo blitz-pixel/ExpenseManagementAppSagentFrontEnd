@@ -9,9 +9,9 @@ import PropTypes from "prop-types";
 import {useState} from "react";
 
 const ExpenseModal = ({
-                          name,transaction, removeExpense, categories,
-                          newExpense, handleChange,
-                          handleAddExpense
+                          name,transaction, removeTransaction, categories,
+                          newTransaction, handleChange,
+                          handleAddTransaction
                       }) => {
     const [showModal, setShowModal] = useState(false);
     let parentCategories = categories.filter(category => category.SubCategoryName === "");
@@ -162,7 +162,7 @@ ExpenseModal.propTypes = {
             date: PropTypes.string.isRequired,
         })
     ).isRequired,
-    removeExpense: PropTypes.func.isRequired,
+    removeTransaction: PropTypes.func.isRequired,
     categories: PropTypes.arrayOf(
         PropTypes.shape({
             id: PropTypes.string.isRequired,
@@ -170,14 +170,14 @@ ExpenseModal.propTypes = {
             SubCategoryName: PropTypes.string,
         })
     ).isRequired,
-    newExpense: PropTypes.shape({
+    newTransaction: PropTypes.shape({
         ParentCategoryName: PropTypes.string.isRequired,
         SubCategoryName: PropTypes.string,
         amount: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
         date: PropTypes.string.isRequired,
     }).isRequired,
     handleChange: PropTypes.func.isRequired,
-    handleAddExpense: PropTypes.func.isRequired,
+    handleAddTransaction: PropTypes.func.isRequired,
     name: PropTypes.string.isRequired
 };
 
