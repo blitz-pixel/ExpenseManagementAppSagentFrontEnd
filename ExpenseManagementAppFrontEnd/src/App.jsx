@@ -15,7 +15,8 @@ import Navbar from "./Templates/Navbar.jsx";
 import Layout from "./Templates/Layout.jsx";
 import Settings from "./Components/Settings.jsx";
 import ProtectedRoute from "./Templates/Protected.jsx";
-import Todos from "./Templates/Test.jsx";
+import Report from "./Components/Report.jsx";
+// import Todos from "./Templates/Test.jsx";
 
 const App = () => {
     const queryClient = new QueryClient();
@@ -27,7 +28,7 @@ const App = () => {
 
                         <Route path="/Registration" element={<Registration />} />
                         <Route path="/Login" element={<Login />} />
-                        <Route path="/ex" element={<Todos />} />
+                        <Route path="/Report" element={<Report />} />
 
                         <Route path="/" element={<Layout />}>
                             <Route index element={<Home />} />
@@ -39,7 +40,6 @@ const App = () => {
                                 <Route path="/Revenue" element={<Revenue />} />
                                 <Route path="/Category" element={<Categories />} />
                                 <Route path="/Settings" element={<Settings />} />
-
                             </Route>
                         </Route>
                     </Routes>
