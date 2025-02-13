@@ -1,7 +1,25 @@
+body {
+    font-family: "Poppins", sans-serif;
+    background: linear-gradient(135deg, #141414, #2c2c2c, #5a4300, #b8860b);
+    background-size: 300% 300%;
+    animation: gradientBG 6s ease infinite;
+    color: white;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100vw; /* Full width */
+    overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+/* Main Container */
 #root {
-    max-width: 1280px;
+    width: 90%; /* Increased width */
+    max-width: 1400px; /* Wider layout */
     margin: 0 auto;
-    padding: 2rem;
+    padding: 3rem;
     text-align: center;
 }
 

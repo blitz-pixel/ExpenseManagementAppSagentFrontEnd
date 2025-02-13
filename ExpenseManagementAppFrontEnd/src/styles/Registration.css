@@ -1,0 +1,58 @@
+body {
+    font-family: "Roboto", sans-serif;
+    background: linear-gradient(135deg, #000000, #2c2c2c, #5a4300, #b8860b);
+    background-size: 300% 300%;
+    animation: gradientBG 8s ease infinite;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Gradient Animation */
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Register Block (Whitish-Grey Theme) */
+.auth-container {
+    background: linear-gradient(135deg, #f5f5f5, #e0e0e0); /* Soft White-Grey Gradient */
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    width: 400px;
+    text-align: center;
+    backdrop-filter: blur(10px); /* Glassmorphism effect */
+    border: 1px solid rgba(255, 215, 0, 0.3); /* Gold border */
+}
+
+/* Heading */
+.auth-form h2 {
+    color: #b8860b; /* Rich Gold */
+}
+
+/* Submit Button */
+.submit-btn {
+    background: #b8860b !important;
+    color: #fff !important;
+    border: none !important;
+}
+
+.submit-btn:hover {
+    background: #d4af37 !important;
+    transform: translateY(-2px);
+}
+
+/* Links */
+.login-link a {
+    color: #b8860b;
+}
+
+.login-link a:hover {
+    color: #d4af37;
+    text-decoration: underline;
+}

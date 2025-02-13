@@ -1,6 +1,6 @@
 import { Card } from "./Card"
 import { PieChart } from "./PieChart"
-import "./Report.css"
+import "../styles/Report.css"
 
 const Report = ({ data }) => {
     const totalRevenue = data.revenue.reduce((sum, item) => sum + item.amount, 0)

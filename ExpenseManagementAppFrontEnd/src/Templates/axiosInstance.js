@@ -25,7 +25,7 @@ api.interceptors.request.use(
                 return Promise.reject(new Error("Session expired. Please log in again."));
             }
             if (config.method === "post") {
-                config.data = { ...config.data, token };
+                config.data = { ...config.data, accountId : token };
             }
         }
         return config;
