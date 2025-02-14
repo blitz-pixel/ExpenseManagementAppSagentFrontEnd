@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 =======
@@ -29,7 +28,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 const Category = () => {
     const [categories, setCategories] = useState([]);
-<<<<<<< HEAD
     const [newCategory, setNewCategory] = useState({
         accountId: id,
         ParentCategoryName: "",
@@ -144,39 +142,6 @@ const Category = () => {
                         <Button variant="contained" color="primary" onClick={addCategory} disabled={isDisabled} sx={{ mr: 1 }}>Save</Button>
                         <Button variant="outlined" color="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
                     </Box>
-=======
-    const [newCategory, setNewCategory] = useState("");
-
-    const addCategory = () => {
-        if (newCategory.trim() !== "" && !categories.includes(newCategory)) {
-            setCategories([...categories, newCategory]);
-            setNewCategory("");
-        }
-    };
-
-    const removeCategory = (category) => {
-        setCategories(categories.filter((c) => c !== category));
-    };
-
-    return (
-        <Box sx={{ maxWidth: 400, mx: "auto", mt: 4 }}>
-            <Paper elevation={3} sx={{ p: 3 }}>
-                <Typography variant="h6" gutterBottom>
-                    Manage Categories
-                </Typography>
-                <Box sx={{ display: "flex", gap: 2 }}>
-                    <TextField
-                        label="New Category"
-                        variant="outlined"
-                        size="small"
-                        fullWidth
-                        value={newCategory}
-                        onChange={(e) => setNewCategory(e.target.value)}
-                    />
-                    <Button variant="contained" color="primary" onClick={addCategory}>
-                        Add
-                    </Button>
->>>>>>> 9dfe1cb0d18003fad444df92f8c97f1ea4a9555d
                 </Box>
                 <List sx={{ mt: 2 }}>
                     {categories.map((category, index) => (
