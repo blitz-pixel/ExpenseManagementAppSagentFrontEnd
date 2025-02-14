@@ -25,12 +25,12 @@ const Navbar = () => {
 
     useEffect(() => {
         if (darkMode) {
-            document.documentElement.style.setProperty("--bg-color", "#121212");
+            document.documentElement.style.setProperty("--bg-color", "#000000");
             document.documentElement.style.setProperty("--text-color", "#ffffff");
             localStorage.setItem("theme", "dark");
         } else {
-            document.documentElement.style.setProperty("--bg-color", "#ffffff");
-            document.documentElement.style.setProperty("--text-color", "#000000");
+            document.documentElement.style.setProperty("--bg-color", "#000000");
+            document.documentElement.style.setProperty("--text-color", "#ffffff");
             localStorage.setItem("theme", "light");
         }
     }, [darkMode]);
@@ -41,66 +41,77 @@ const Navbar = () => {
 
     return (
         <>
-            <AppBar position="fixed" color="primary" sx={{ backgroundColor: darkMode ? "#333" : "primary" }}>
+            <style>
+                {`
+                    @keyframes gradientBG {
+                        0% { background-position: 0% 50%; }
+                        50% { background-position: 100% 50%; }
+                        100% { background-position: 0% 50%; }
+                    }
+                `}
+            </style>
+            <AppBar
+                position="fixed"
+                sx={{
+                    background: "linear-gradient(135deg, #141414, #2c2c2c, #5a4300, #b8860b)",
+                    backgroundSize: "300% 300%",
+                    animation: "gradientBG 6s ease infinite",
+                    color: "#ffffff",
+                }}
+            >
                 <Container maxWidth="lg">
                     <Toolbar disableGutters sx={{ display: "flex", justifyContent: "space-between" }}>
-                        <Box sx={{ display: "flex", alignItems: "center" }}>
-                            <IconButton color="inherit" onClick={toggleDrawer(true)}>
-                                <MenuIcon />
-                            </IconButton>
+                        {/* Move menu icon to the left */}
+                        <IconButton color="inherit" onClick={toggleDrawer(true)} sx={{ marginLeft: -30 }}>
+                            <MenuIcon />
+                        </IconButton>
+                        <Box sx={{ display: "flex", alignItems: "center", flexGrow: 1 }}>
                             <Link to="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", color: "inherit" }}>
                                 <img
                                     src="https://flowbite.com/docs/images/logo.svg"
                                     alt="Logo"
                                     style={{ height: "40px", marginRight: "10px" }}
                                 />
-                                <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                                    Expense Tracker
+                                <Typography variant="h6" sx={{ fontWeight: "bold", color: "#ffffff" }}>
+                                    Gastos Rastreador
                                 </Typography>
                             </Link>
                         </Box>
-<<<<<<< HEAD
-                        <Box sx={{ display: "flex", gap: 2 }}>
-                            <Button color="inherit" onClick={() => navigate("/")}>Home</Button>
-                            <Button color="inherit" onClick={() => navigate("/Settings")}>Settings</Button>
-                            <Button color="inherit" onClick={() => navigate("/Category")}>Categories</Button>
-                            <Button color="inherit">Log Out</Button>
-=======
-                        <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" }, justifyContent: "flex-end" }}>
-                            <Button color="inherit" sx={{ marginRight: 2 }} onClick={() => navigate("/")}>Home</Button>
-                            <Button color="inherit" sx={{ marginRight: 2 }} onClick={() => navigate("/Settings")}>Settings</Button>
-                            <Button color="inherit" sx={{ marginRight: 2 }} onClick={() => navigate("/Categories")}>Categories</Button>
-                            <Button color="inherit" sx={{ marginRight: 2 }} >Log Out</Button>
->>>>>>> 9dfe1cb0d18003fad444df92f8c97f1ea4a9555d
+                            <Box sx={{ display: { xs: "none", md: "flex" }, justifyContent: "flex-end", gap: 10 }}>
+                            <Button color="inherit" sx={{ color: "#ffffff" }} onClick={() => navigate("/")}>Home</Button>
+                            <Button color="inherit" sx={{ color: "#ffffff" }} onClick={() => navigate("/Settings")}>Settings</Button>
+                            <Button color="inherit" sx={{ color: "#ffffff" }} onClick={() => navigate("/Categories")}>Categories</Button>
+                            <Button color="inherit" sx={{ color: "#ffffff" }}>Log Out</Button>
                         </Box>
-                        <IconButton onClick={() => setDarkMode(!darkMode)} color="inherit">
+
+                        {/* <IconButton onClick={() => setDarkMode(!darkMode)} color="inherit">
                             {darkMode ? <Sun /> : <Moon />}
-                        </IconButton>
+                        </IconButton> */}
                     </Toolbar>
                 </Container>
             </AppBar>
 
             <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
-                <Box sx={{ width: 250, p: 2 }}>
-                    <Typography variant="h6" gutterBottom>
+                <Box sx={{ width: 250, p: 2, backgroundColor: "#000000", color: "#ffffff" }}>
+                    <Typography variant="h6" gutterBottom sx={{ color: "#ffffff" }}>
                         Navigation
                     </Typography>
                     <List>
                         <ListItem button onClick={() => navigate("/Dashboard")}>
-                            <ListItemText primary="Dashboard" />
+                            <ListItemText primary="Dashboard" sx={{ color: "#ffffff" }} />
                         </ListItem>
                         <ListItem button onClick={() => navigate("/Expense")}>
-                            <ListItemText primary="Expense" />
+                            <ListItemText primary="Expense" sx={{ color: "#ffffff" }} />
                         </ListItem>
                         <ListItem button onClick={() => navigate("/Revenue")}>
-                            <ListItemText primary="Revenue" />
+                            <ListItemText primary="Revenue" sx={{ color: "#ffffff" }} />
                         </ListItem>
                         <ListItem button onClick={() => navigate("/Report")}>
-                            <ListItemText primary="Report" />
+                            <ListItemText primary="Report" sx={{ color: "#ffffff" }} />
                         </ListItem>
                     </List>
-                    <Divider sx={{ my: 2 }} />
-                    <Typography variant="h6" gutterBottom>
+                    <Divider sx={{ my: 2, backgroundColor: "#ffffff" }} />
+                    <Typography variant="h6" gutterBottom sx={{ color: "#ffffff" }}>
                         Settings
                     </Typography>
                     <List>
@@ -108,6 +119,7 @@ const Navbar = () => {
                             <FormControlLabel
                                 control={<Switch checked={darkMode} onChange={() => setDarkMode(!darkMode)} />}
                                 label="Dark Mode"
+                                sx={{ color: "#ffffff" }}
                             />
                         </ListItem>
                     </List>

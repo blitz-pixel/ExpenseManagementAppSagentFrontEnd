@@ -13,6 +13,7 @@ import Navbar from "./Components/Navbar.jsx";
 import Layout from "./Components/Layout.jsx";
 import Settings from "./Components/Settings.jsx";
 import Report from "./Components/Report";
+import Categories from "./Components/Categories";
 import "./App.css";
 
 const App = () => {
@@ -42,17 +43,11 @@ const App = () => {
                     <Route path="/" element={<Layout />}>
                         <Route index element={<Home />} />
                         <Route path="/Dashboard" element={<Dashboard />} />
-<<<<<<< HEAD
                         <Route path="/Expense" element={<Expense/>}/>
                         <Route path="/Revenue" element={<Revenue/>}/>
                         <Route path="/Category" element={<Categories />} />
-                        <Route path="/Navbar" element={<Navbar />} />
-
-=======
-                        <Route path="/Expense" element={<Expense />} />
-                        <Route path="/Revenue" element={<Revenue />} />
                         <Route path="/Account" element={<Account />} />
->>>>>>> 9dfe1cb0d18003fad444df92f8c97f1ea4a9555d
+                        <Route path="/Navbar" element={<Navbar />} />
                         <Route path="/Settings" element={<Settings />} />
                     </Route>
                     <Route path="/Registration" element={<Registration />} />

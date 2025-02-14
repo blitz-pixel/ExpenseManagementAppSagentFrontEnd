@@ -34,19 +34,11 @@ const RevenuePage = () => {
         const getRevenue = async () => {
             try {
                 console.log("Fetching revenue for account ID:", id);
-
                 const resp = await axios.get(`http://localhost:8080/api/v1/revenue?accountId=${id}`);
-<<<<<<< HEAD
                 const RevenueWithIds = resp.data.map((revenue) => ({
-=======
-
-
-                const RevenueWithUnIds = resp.data.map((revenue) => ({
->>>>>>> 9dfe1cb0d18003fad444df92f8c97f1ea4a9555d
                     id: uuidv4(),
                     ...revenue
                 }));
-
                 setRevenues(RevenueWithIds);
             } catch (error) {
                 console.error("Error fetching revenue:", error);
@@ -54,13 +46,11 @@ const RevenuePage = () => {
                 setLoading(false);
             }
         };
-
         getRevenue();
     }, [id]);
 
     const handleAddRevenue = async () => {
         try {
-<<<<<<< HEAD
             await axios.post("http://localhost:8080/api/v1/revenue/add", newRevenue);
             setRevenues([...revenues, { id: uuidv4(), ...newRevenue }]);
         } catch (error) {
@@ -68,20 +58,6 @@ const RevenuePage = () => {
         }
         setShowModal(false);
         setNewRevenue({ accountId: id, ParentCategoryName: "", SubCategoryName: "", amount: "", date: "" });
-=======
-            const response = await axios.post("http://localhost:8080/api/v1/revenue/add", newRevenue);
-            console.log(response)
-
-            const addedRevenue = { id: uuidv4(), ...newRevenue };
-            setRevenues([...revenues, addedRevenue]);
-            setRefresh(prev => !prev);
-        } catch (error) {
-            console.error("Error adding new revenue:", error);
-        }
-
-        setShowModal(false);
-        setNewRevenue({ accountId : id,ParentCategoryName: "", SubCategoryName: "", amount: "", date: "" });
->>>>>>> 9dfe1cb0d18003fad444df92f8c97f1ea4a9555d
     };
 
     return (
@@ -116,7 +92,6 @@ const RevenuePage = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-<<<<<<< HEAD
                             {revenues.map((revenue, index) => (
                                 <TableRow key={revenue.id}>
                                     <TableCell>{index + 1}</TableCell>
@@ -126,20 +101,6 @@ const RevenuePage = () => {
                                     <TableCell>{new Date(revenue.date).toLocaleDateString() || "-"}</TableCell>
                                 </TableRow>
                             ))}
-=======
-                            {revenues.map((revenue, index) => {
-
-                                return (
-                                    <TableRow key={revenue.id}>
-                                        <TableCell>{index + 1}</TableCell>
-                                        <TableCell>{revenue.ParentCategoryName}</TableCell>
-                                        <TableCell>{revenue.SubCategoryName || "-"}</TableCell>
-                                        <TableCell>{revenue.amount}</TableCell>
-                                        <TableCell>{new Date(revenue.date).toLocaleDateString()}</TableCell>
-                                    </TableRow>
-                                );
-                            })}
->>>>>>> 9dfe1cb0d18003fad444df92f8c97f1ea4a9555d
                         </TableBody>
                     </Table>
                 </TableContainer>
@@ -151,7 +112,6 @@ const RevenuePage = () => {
                 </Card>
             )}
 
-<<<<<<< HEAD
             <Modal open={showModal} onClose={() => setShowModal(false)}>
                 <Box className="revenue-modal">
                     <Box className="modal-header">
@@ -168,81 +128,6 @@ const RevenuePage = () => {
                         <Button className="save-btn" onClick={handleAddRevenue}>Save</Button>
                         <Button className="cancel-btn" onClick={() => setShowModal(false)}>Cancel</Button>
                     </Box>
-=======
-            {/* Popup Modal */}
-            <Modal
-                open={showModal}
-                onClose={() => setShowModal(false)}
-                aria-labelledby="add-revenue-modal"
-                aria-describedby="form-to-add-new-revenue"
-            >
-                <Box sx={{
-                    width: 400,
-                    bgcolor: "white",
-                    borderRadius: "8px",
-                    p: 3,
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    boxShadow: 24
-                }}>
-                    <Typography variant="h6" gutterBottom>Add Revenue</Typography>
-                    <TextField
-                        label="Category"
-                        variant="outlined"
-                        fullWidth
-                        value={newRevenue.ParentCategoryName}
-                        onChange={(e) => handleChange("ParentCategoryName", e.target.value)}
-                        sx={{ mb: 2 }}
-                    />
-                    <TextField
-                        label="Sub-Category"
-                        variant="outlined"
-                        fullWidth
-                        value={newRevenue.SubCategoryName}
-                        onChange={(e) => handleChange("SubCategoryName", e.target.value)}
-                        sx={{ mb: 2 }}
-                    />
-                    <TextField
-                        label="Amount"
-                        variant="outlined"
-                        fullWidth
-                        type="number"
-                        value={newRevenue.amount}
-                        onChange={(e) => handleChange("amount", e.target.value)}
-                        sx={{ mb: 2 }}
-                    />
-                    <TextField
-                        label="Date"
-                        variant="outlined"
-                        fullWidth
-                        type="date"
-                        value={newRevenue.date}
-                        onChange={(e) => handleChange("date", e.target.value)}
-                        sx={{ mb: 2 }}
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                    />
-                    <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={handleAddRevenue}
-                            sx={{ mr: 1 }}
-                        >
-                            Save
-                        </Button>
-                        <Button
-                            variant="outlined"
-                            color="secondary"
-                            onClick={() => setShowModal(false)}
-                        >
-                            Cancel
-                        </Button>
-                    </div>
->>>>>>> 9dfe1cb0d18003fad444df92f8c97f1ea4a9555d
                 </Box>
             </Modal>
         </Box>

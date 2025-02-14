@@ -4,11 +4,9 @@ import {
     Typography,
     Container,
     Box,
-    Grid,
     Card,
     CardContent,
     CardHeader,
-    useTheme
 } from "@mui/material";
 import { motion } from "framer-motion";
 
@@ -43,9 +41,13 @@ const features = [
     },
 ];
 
-const Home = () => {
-    const theme = useTheme();
+const gradientAnimation = {
+    background: "linear-gradient(135deg, #141414, #2c2c2c, #5a4300, #b8860b)",
+    backgroundSize: "300% 300%",
+    animation: "gradientBG 6s ease infinite",
+};
 
+const Home = () => {
     return (
         <Box
             sx={{
@@ -53,11 +55,8 @@ const Home = () => {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                background: `linear-gradient(135deg, ${theme.palette.primary.dark}, ${theme.palette.background.default})`,
-                animation: "gradientBG 6s ease infinite",
-                py: 8,
-                px: 3,
-                textAlign: "center"
+                ...gradientAnimation,
+                padding: "20px",
             }}
         >
             <Container maxWidth="lg">
@@ -66,21 +65,30 @@ const Home = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <Box mb={8}>
+                    <Box
+                        sx={{
+                            width: "90vw",
+                            maxWidth: "1100px",
+                            py: 6,
+                            px: 3,
+                            textAlign: "center",
+                            borderRadius: "12px",
+                            boxShadow: "0 8px 16px rgba(255, 255, 255, 0.2)",
+                            ...gradientAnimation, // Ensures the box has the same animation
+                        }}
+                    >
                         <Typography
                             variant="h2"
                             component="h1"
-                            color="gold"
                             fontWeight="bold"
-                            sx={{ textShadow: "0 4px 8px rgba(0, 0, 0, 0.5)" }}
+                            sx={{
+                                color: "white",
+                                textShadow: "0 4px 8px rgba(255, 255, 255, 0.3)",
+                            }}
                         >
                             Welcome to Expense Tracker
                         </Typography>
-                        <Typography
-                            variant="h5"
-                            color="white"
-                            paragraph
-                        >
+                        <Typography variant="h5" color="white" paragraph>
                             Simplify your expense management and gain financial insights
                         </Typography>
                         <Box mt={4}>
@@ -97,7 +105,7 @@ const Home = () => {
                                     size="large"
                                     sx={{
                                         fontWeight: "bold",
-                                        boxShadow: "0px 4px 12px rgba(255, 215, 0, 0.5)"
+                                        boxShadow: "0px 4px 12px rgba(255, 215, 0, 0.5)",
                                     }}
                                 >
                                     Register
@@ -116,7 +124,7 @@ const Home = () => {
                                     size="large"
                                     sx={{
                                         fontWeight: "bold",
-                                        boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.3)"
+                                        boxShadow: "0px 4px 12px rgba(255, 255, 255, 0.3)",
                                     }}
                                 >
                                     Login
@@ -134,52 +142,57 @@ const Home = () => {
                     <Typography
                         variant="h4"
                         component="h2"
-                        color="gold"
+                        color="white"
                         textAlign="center"
+                        mt={6}
                         mb={4}
                         fontWeight="bold"
-                        sx={{ textShadow: "0 2px 6px rgba(0, 0, 0, 0.4)" }}
+                        sx={{ textShadow: "0 2px 6px rgba(255, 255, 255, 0.4)" }}
                     >
                         Features and Workflow
                     </Typography>
-                    <Grid container spacing={4} justifyContent="center">
+                    <Box
+                        sx={{
+                            display: "grid",
+                            gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+                            gap: 3,
+                        }}
+                    >
                         {features.map((feature, index) => (
-                            <Grid item xs={12} sm={6} md={4} key={index}>
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.3, delay: index * 0.1 }}
-                                    whileHover={{ scale: 1.05 }}
+                            <motion.div
+                                key={index}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.3, delay: index * 0.1 }}
+                                whileHover={{ scale: 1.05 }}
+                            >
+                                <Card
+                                    sx={{
+                                        background: "rgba(255, 255, 255, 0.1)",
+                                        backdropFilter: "blur(10px)",
+                                        borderRadius: "12px",
+                                        boxShadow: "0 8px 16px rgba(255, 255, 255, 0.2)",
+                                        color: "white",
+                                        transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                                        "&:hover": {
+                                            transform: "translateY(-5px)",
+                                            boxShadow: "0 12px 25px rgba(255, 255, 255, 0.3)",
+                                        },
+                                    }}
                                 >
-                                    <Card
-                                        sx={{
-                                            height: "100%",
-                                            background: "rgba(255, 255, 255, 0.1)",
-                                            backdropFilter: "blur(10px)",
-                                            borderRadius: "12px",
-                                            boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)",
-                                            color: "white",
-                                            transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                                            "&:hover": {
-                                                transform: "translateY(-5px)",
-                                                boxShadow: "0 12px 25px rgba(0, 0, 0, 0.3)"
-                                            }
-                                        }}
-                                    >
-                                        <CardHeader
-                                            title={feature.title}
-                                            titleTypographyProps={{ variant: "h6", color: "gold" }}
-                                        />
-                                        <CardContent>
-                                            <Typography variant="body2" color="white">
-                                                {feature.description}
-                                            </Typography>
-                                        </CardContent>
-                                    </Card>
-                                </motion.div>
-                            </Grid>
+                                    <CardHeader
+                                        title={feature.title}
+                                        titleTypographyProps={{ variant: "h6", color: "white" }}
+                                    />
+                                    <CardContent>
+                                        <Typography variant="body2" color="white">
+                                            {feature.description}
+                                        </Typography>
+                                    </CardContent>
+                                </Card>
+                            </motion.div>
                         ))}
-                    </Grid>
+                    </Box>
                 </motion.div>
             </Container>
         </Box>

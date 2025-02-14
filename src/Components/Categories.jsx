@@ -1,32 +1,27 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
-=======
-import { useState } from "react";
->>>>>>> 9dfe1cb0d18003fad444df92f8c97f1ea4a9555d
 import {
     Box,
     TextField,
     Button,
-    List,
-    ListItem,
-    ListItemText,
-    IconButton,
-    Paper,
-    Typography,
-<<<<<<< HEAD
     TableContainer,
     Table,
     TableHead,
     TableRow,
     TableCell,
     TableBody,
-    Modal
-=======
->>>>>>> 9dfe1cb0d18003fad444df92f8c97f1ea4a9555d
+    Paper,
+    Typography,
+    Modal,
+    IconButton,
+    Menu,
+    MenuItem
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 const Category = () => {
+    const id = localStorage.getItem("accountId") || "";
     const [categories, setCategories] = useState([]);
     const [newCategory, setNewCategory] = useState({
         accountId: id,
@@ -35,7 +30,10 @@ const Category = () => {
         type: ""
     });
     const [error, setError] = useState("");
-    
+    const [showModal, setShowModal] = useState(false);
+    const [refresh, setRefresh] = useState(false);
+    const [anchorEl, setAnchorEl] = useState(null);
+
     const isDisabled = !newCategory.ParentCategoryName || !newCategory.type;
 
     useEffect(() => {
@@ -64,14 +62,21 @@ const Category = () => {
         }
     };
 
-    const removeCategory = (categoryId) => {
-        setCategories(categories.filter((c) => c.id !== categoryId));
+    const removeCategory = async (categoryId) => {
+        try {
+            await axios.delete(`http://localhost:8080/api/v1/categories/delete/${categoryId}`);
+            setRefresh((prev) => !prev);
+        } catch (error) {
+            console.error("Error deleting category:", error);
+        }
     };
 
     return (
         <Box sx={{ maxWidth: 600, mx: "auto", mt: 4, textAlign: "center" }}>
             {error && <Typography color="error">{error}</Typography>}
-            <Button variant="contained" color="primary" onClick={() => setShowModal(true)}>Add Category</Button>
+            <Button variant="contained" color="primary" onClick={() => setShowModal(true)}>
+                Add Category
+            </Button>
             {categories.length > 0 && (
                 <TableContainer component={Paper} sx={{ mt: 3 }}>
                     <Table>
@@ -104,17 +109,19 @@ const Category = () => {
             )}
 
             <Modal open={showModal} onClose={() => setShowModal(false)}>
-                <Box sx={{
-                    width: 400,
-                    bgcolor: "white",
-                    borderRadius: 2,
-                    p: 3,
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    boxShadow: 24
-                }}>
+                <Box
+                    sx={{
+                        width: 400,
+                        bgcolor: "white",
+                        borderRadius: 2,
+                        p: 3,
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        boxShadow: 24
+                    }}
+                >
                     <Typography variant="h6" gutterBottom>Add Category</Typography>
                     <TextField
                         required
@@ -135,29 +142,19 @@ const Category = () => {
                         {newCategory.type || "Select Type"}
                     </Button>
                     <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
-                        <MenuItem onClick={() => setNewCategory({ ...newCategory, type: "expense" })}>Expense</MenuItem>
-                        <MenuItem onClick={() => setNewCategory({ ...newCategory, type: "income" })}>Income</MenuItem>
+                        <MenuItem onClick={() => { setNewCategory({ ...newCategory, type: "expense" }); setAnchorEl(null); }}>Expense</MenuItem>
+                        <MenuItem onClick={() => { setNewCategory({ ...newCategory, type: "income" }); setAnchorEl(null); }}>Income</MenuItem>
                     </Menu>
                     <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
-                        <Button variant="contained" color="primary" onClick={addCategory} disabled={isDisabled} sx={{ mr: 1 }}>Save</Button>
-                        <Button variant="outlined" color="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
+                        <Button variant="contained" color="primary" onClick={addCategory} disabled={isDisabled} sx={{ mr: 1 }}>
+                            Save
+                        </Button>
+                        <Button variant="outlined" color="secondary" onClick={() => setShowModal(false)}>
+                            Cancel
+                        </Button>
                     </Box>
                 </Box>
-                <List sx={{ mt: 2 }}>
-                    {categories.map((category, index) => (
-                        <ListItem
-                            key={index}
-                            secondaryAction={
-                                <IconButton edge="end" onClick={() => removeCategory(category)}>
-                                    <DeleteIcon />
-                                </IconButton>
-                            }
-                        >
-                            <ListItemText primary={category} />
-                        </ListItem>
-                    ))}
-                </List>
-            </Paper>
+            </Modal>
         </Box>
     );
 };
