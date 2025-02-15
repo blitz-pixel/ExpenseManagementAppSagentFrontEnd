@@ -1,305 +1,114 @@
-// import { WalletCards, Receipt, FileText, FolderKanban } from "lucide-react"
-// import { Link } from "react-router-dom";
-// import { Grid2, Box , Paper,Typography} from "@mui/material";
-//
-// function Dashboard() {
-//       return (
-//         <Box
-//   sx={{
-//     display: "grid",
-//     position: "relative",
-//     border: '1px dashed grey' ,
-//     justifyContent: "center",
-//     gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, // Two columns on medium screens
-//     gridTemplateRows: { xs: "auto", md: "200px 200px" }, // Two rows on medium screens
-//     rowGap: "70px",
-//     columnGap: "20px",
-//     // padding: "20px",
-//     width: "800px",
-//     height: "520px",
-//
-//   }}
-// >
-//
-// <Link to="/income">
-//
-//   <Paper
-//     sx={{
-//       height: "250px",
-//       width: "398px",
-//       display: "flex",
-//
-//       alignItems: "center",
-//       justifyContent: "center",
-//       gridColumn: { xs: "1", md: "1 / span 1" }, // First column on medium screens
-//       gridRow: { xs: "1", md: "1" }, // First row on medium screens
-//     }}
-//   >
-//     <Typography variant="h4">Income</Typography>
-//     <Box sx={{
-//       border: '1px dashed grey',
-//       position: 'absolute',
-//       right: '510px',
-//     }}>
-//       <WalletCards />
-//     </Box>
-//   </Paper>
-//   </Link>
-//
-//
-//        <Link to="/expense">
-//
-//
-//
-//
-//   <Paper
-//     sx={{
-//        height: "250px",
-//       width: "380px",
-//       display: "flex",
-//       alignItems: "center",
-//       justifyContent: "center",
-//       gridColumn: { xs: "1", md: "2" }, // Second column on medium screens
-//       gridRow: { xs: "2", md: "1" }, // First row on medium screens
-//     }}
-//   >
-//     <Typography variant="h4">Revenue</Typography>
-//     <Box sx={{
-//       border: '1px dashed grey',
-//       position: 'absolute',
-//       right: '90px',
-//     }}>
-//     <Receipt/>
-//     </Box>
-//   </Paper>
-//  </Link>
-//   <Paper
-//     sx={{
-//       height: "250px",
-//       width: "398px",
-//       display: "flex",
-//       alignItems: "center",
-//       justifyContent: "center",
-//       gridColumn: { xs: "1", md: "1" }, // First column on medium screens
-//       gridRow: { xs: "3", md: "2" }, // Second row on medium screens
-//     }}
-//   >
-//     <Typography variant="h4">3</Typography>
-//   </Paper>
-//
-//
-//   <Paper
-//     sx={{
-//       height: "250px",
-//       width: "380px",
-//       display: "flex",
-//       alignItems: "center",
-//       justifyContent: "center",
-//       gridColumn: { xs: "1", md: "2" }, // Second column on medium screens
-//       gridRow: { xs: "4", md: "2" }, // Second row on medium screens
-//     }}
-//   >
-//     <Typography variant="h4">4</Typography>
-//   </Paper>
-// </Box>
-//       );
-//
-//   // return (
-//   //   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
-//   //     <Link to="/income">
-//   //       <div className="group bg-[#ffd9d1] rounded-lg p-8 transition-all hover:shadow-lg">
-//   //         <div className="flex items-center justify-between mb-4">
-//   //           <h2 className="text-2xl font-bold">INCOME OVERVIEW</h2>
-//   //           <WalletCards className="h-6 w-6 text-gray-700 group-hover:scale-110 transition-transform" />
-//   //         </div>
-//   //       </div>
-//   //     </Link>
-//
-//
-//   //     <Link to="/report">
-//   //       <div className="group bg-[#ffd9d1] rounded-lg p-8 transition-all hover:shadow-lg">
-//   //         <div className="flex items-center justify-between mb-4">
-//   //           <h2 className="text-2xl font-bold">REPORT</h2>
-//   //           <FileText className="h-6 w-6 text-gray-700 group-hover:scale-110 transition-transform" />
-//   //         </div>
-//   //       </div>
-//   //     </Link>
-//
-//   //     <Link to="/categories">
-//   //       <div className="group bg-[#ffd9d1] rounded-lg p-8 transition-all hover:shadow-lg">
-//   //         <div className="flex items-center justify-between mb-4">
-//   //           <h2 className="text-2xl font-bold">CATEGORIES</h2>
-//   //           <FolderKanban className="h-6 w-6 text-gray-700 group-hover:scale-110 transition-transform" />
-//   //         </div>
-//   //       </div>
-//   //     </Link>
-//   //   </div>
-//   // )
-// }
-//
-// export default Dashboard;
-
-
-import { WalletCards, Receipt } from "lucide-react";
+import { WalletCards, Receipt, FileText, BarChart3 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Box, Grid, Paper, Typography, Button } from "@mui/material";
+import { Box, Grid, Typography, Button } from "@mui/material";
 
 function Dashboard() {
+    const cardData = [
+        {
+            title: "INCOME OVERVIEW",
+            description: "Monitor and manage all your revenue sources effectively. Stay updated on earnings and cash flow trends.",
+            link: "/Revenue",
+            icon: <WalletCards size={64} />,
+        },
+        {
+            title: "EXPENSE OVERVIEW",
+            description: "Track all your expenses in one place. Get insights into spending patterns and budget allocations.",
+            link: "/Expense",
+            icon: <Receipt size={64} />,
+        },
+        {
+            title: "FINANCIAL REPORTS",
+            description: "Generate detailed financial reports for analysis. Get a clear view of profits, losses, and balances.",
+            link: "/Report",
+            icon: <FileText size={64} />,
+        },
+        {
+            title: "RECENT TRANSACTIONS",
+            description: "Review the latest transactions and account activities. Keep track of every financial movement with precision.",
+            link: "/Transactions",
+            icon: <BarChart3 size={64} />,
+        },
+    ];
+
     return (
         <Box
             sx={{
-                display: "grid",
-                gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
-                gap: 3,
+                height: "100vh",
+                display: "flex",
                 justifyContent: "center",
-                padding: 3,
-                height: "100%",
+                alignItems: "center",
+                paddingRight: "50px",
+                background: "transparent",
             }}
         >
-            <Grid container spacing={3}>
-                {/* Income Overview Card */}
-                <Grid item xs={12} sm={6}>
-                    <Link to="/Revenue" style={{ textDecoration: "none" }}>
-                        <Paper
+            <Grid container spacing={4} sx={{ maxWidth: "90vw" }}>
+                {cardData.map((card, index) => (
+                    <Grid item xs={6} key={index} sx={{ display: "flex", justifyContent: "center" }}>
+                        <Box
                             sx={{
                                 display: "flex",
                                 flexDirection: "column",
+                                justifyContent: "space-between",
                                 alignItems: "center",
-                                padding: 2,
-                                boxShadow: 3,
-                                borderRadius: 2,
-                                backgroundColor: "white",
+                                width: "500px", // Increased width for a rectangular shape
+                                height: "320px",
+                                padding: 4,
+                                background: "linear-gradient(to bottom, #d4a017, #b8860b)",
+                                borderRadius: "20px", // Enhanced rounded corners
+                                border: "4px solid #a37412", // Stylish border
+                                boxShadow: "0px 8px 15px rgba(0, 0, 0, 0.3)", // Elegant shadow
+                                transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
+                                "&:hover": {
+                                    transform: "translateY(-5px)",
+                                    boxShadow: "0px 12px 20px rgba(0, 0, 0, 0.4)",
+                                },
                             }}
                         >
-                            <img
-                                src="/docs/images/blog/image-1.jpg"
-                                alt="Income Overview"
-                                style={{
-                                    width: "100%",
-                                    height: "auto",
-                                    borderRadius: "8px",
-                                    marginBottom: "16px",
+                            {card.icon}
+                            <Typography
+                                variant="h5"
+                                sx={{
+                                    fontWeight: "bold",
+                                    fontFamily: "Arial, sans-serif",
+                                    color: "#000",
+                                    textAlign: "center",
+                                    marginTop: 1,
+                                    textTransform: "uppercase",
+                                    letterSpacing: "1px",
                                 }}
-                            />
-                            <Typography variant="h5" sx={{ fontWeight: "bold", marginBottom: 2 }}>
-                                Income Overview
+                            >
+                                {card.title}
                             </Typography>
-                            <Typography sx={{ marginBottom: 2 }}>
-                                Manage and track all your income streams here.
-                            </Typography>
-                            <Button variant="contained" color="primary" sx={{ padding: "8px 20px" }}>
-                                View Details
-                            </Button>
-                        </Paper>
-                    </Link>
-                </Grid>
-
-                {/* Expense Overview Card */}
-                <Grid item xs={12} sm={6}>
-                    <Link to="/Expense" style={{ textDecoration: "none" }}>
-                        <Paper
-                            sx={{
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                padding: 2,
-                                boxShadow: 3,
-                                borderRadius: 2,
-                                backgroundColor: "white",
-                            }}
-                        >
-                            <img
-                                src="/docs/images/blog/image-1.jpg"
-                                alt="Expense Overview"
-                                style={{
-                                    width: "100%",
-                                    height: "auto",
-                                    borderRadius: "8px",
-                                    marginBottom: "16px",
+                            <Typography
+                                sx={{
+                                    fontSize: "1rem",
+                                    fontFamily: "Arial, sans-serif",
+                                    color: "#000",
+                                    textAlign: "center",
+                                    marginBottom: 2,
+                                    padding: "0 10px",
                                 }}
-                            />
-                            <Typography variant="h5" sx={{ fontWeight: "bold", marginBottom: 2 }}>
-                                Expense Overview
+                            >
+                                {card.description}
                             </Typography>
-                            <Typography sx={{ marginBottom: 2 }}>
-                                Keep track of your expenses and manage your budgets.
-                            </Typography>
-                            <Button variant="contained" color="primary" sx={{ padding: "8px 20px" }}>
-                                View Details
-                            </Button>
-                        </Paper>
-                    </Link>
-                </Grid>
-
-                {/* Report Card */}
-                <Grid item xs={12} sm={6}>
-                    <Paper
-                        sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            padding: 2,
-                            boxShadow: 3,
-                            borderRadius: 2,
-                            backgroundColor: "white",
-                        }}
-                    >
-                        <img
-                            src="/docs/images/blog/image-1.jpg"
-                            alt="ReportImg"
-                            style={{
-                                width: "100%",
-                                height: "auto",
-                                borderRadius: "8px",
-                                marginBottom: "16px",
-                            }}
-                        />
-                        <Typography variant="h5" sx={{ fontWeight: "bold", marginBottom: 2 }}>
-                            Report
-                        </Typography>
-                        <Typography sx={{ marginBottom: 2 }}>
-                            Get transaction report here.
-                        </Typography>
-                        <Button variant="contained" color="primary" sx={{ padding: "8px 20px" }}>
-                            View Details
-                        </Button>
-                    </Paper>
-                </Grid>
-
-                {/* Recent Transactions Card */}
-                <Grid item xs={12} sm={6}>
-                    <Paper
-                        sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            padding: 2,
-                            boxShadow: 3,
-                            borderRadius: 2,
-                            backgroundColor: "white",
-                        }}
-                    >
-                        <img
-                            src="/docs/images/blog/image-1.jpg"
-                            alt="Recent Transactions"
-                            style={{
-                                width: "100%",
-                                height: "auto",
-                                borderRadius: "8px",
-                                marginBottom: "16px",
-                            }}
-                        />
-                        <Typography variant="h5" sx={{ fontWeight: "bold", marginBottom: 2 }}>
-                            Recent Transactions
-                        </Typography>
-                        <Typography sx={{ marginBottom: 2 }}>
-                            View most recent Transactions here.
-                        </Typography>
-                        <Button variant="contained" color="primary" sx={{ padding: "8px 20px" }}>
-                            View Details
-                        </Button>
-                    </Paper>
-                </Grid>
+                            <Link to={card.link} style={{ textDecoration: "none" }}>
+                                <Button
+                                    variant="contained"
+                                    sx={{
+                                        backgroundColor: "#6b4f1d",
+                                        color: "#fff",
+                                        fontFamily: "Arial, sans-serif",
+                                        fontWeight: "bold",
+                                        textTransform: "uppercase",
+                                        "&:hover": { backgroundColor: "#5a3f14" },
+                                    }}
+                                >
+                                    View Details
+                                </Button>
+                            </Link>
+                        </Box>
+                    </Grid>
+                ))}
             </Grid>
         </Box>
     );
