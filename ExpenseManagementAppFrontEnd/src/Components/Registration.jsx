@@ -51,7 +51,6 @@ const Registration = () => {
         // setSnackbar({open: false, message: "", severity: ""})
     }
     const validateForm = () => {
-
         if (!register.formData.userName) {
             dispatch({type: "SET_SNACKBAR",payload: { open: true, message: "Username is required", severity: "error",code: 101}})
             return false
@@ -78,6 +77,8 @@ const Registration = () => {
 
             return false
         }
+
+        return true
 
     }
 

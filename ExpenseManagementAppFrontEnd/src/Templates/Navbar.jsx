@@ -1,18 +1,37 @@
-import { useState } from "react";
-import { AppBar, Toolbar, Typography, Button, IconButton, Menu, MenuItem, Box, Container, Switch, FormControlLabel, Drawer, List, ListItem, ListItemText } from "@mui/material";
-import { Menu as MenuIcon } from "lucide-react";
+import { useState, useEffect } from "react";
+import {
+    AppBar,
+    Toolbar,
+    Typography,
+    Button,
+    IconButton,
+    Drawer,
+    List,
+    ListItem,
+    ListItemText,
+    Box,
+    Container,
+    Switch,
+    FormControlLabel,
+    Divider, Avatar, MenuItem,
+    Menu
+} from "@mui/material";
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { Menu as MenuIcon, Moon, Sun } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { logout } from "./axiosInstance.js";
+import {logout} from "./axiosInstance.js";
+
+const token = localStorage.getItem("accountId");
 
 const Navbar = () => {
-    const [anchorEl, setAnchorEl] = useState(null);
-    const openMenu = Boolean(anchorEl);
-    const navigate = useNavigate();
     const [drawerOpen, setDrawerOpen] = useState(false);
-    const [darkMode, setDarkMode] = useState(false);
-    const [notifications, setNotifications] = useState(true);
+    const [darkMode, setDarkMode] = useState(localStorage.getItem("theme") === "dark");
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
 
-    const handleMenuOpen = (event) => {
+
+
+    const handleMenuClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
 
@@ -20,57 +39,122 @@ const Navbar = () => {
         setAnchorEl(null);
     };
 
+    const navigate = useNavigate();
+    //
+    // useEffect(() => {
+    //     if (darkMode) {
+    //         document.documentElement.style.setProperty("--bg-color", "#000000");
+    //         document.documentElement.style.setProperty("--text-color", "#ffffff");
+    //         localStorage.setItem("theme", "dark");
+    //     } else {
+    //         document.documentElement.style.setProperty("--bg-color", "#ffffff");
+    //         document.documentElement.style.setProperty("--text-color", "#000000");
+    //         localStorage.setItem("theme", "light");
+    //     }
+    // }, [darkMode]);
+
     const toggleDrawer = (open) => () => {
         setDrawerOpen(open);
     };
 
     return (
         <>
-            <AppBar position="fixed" color="primary" sx={{ zIndex: 1201 }}>
-                <Container maxWidth="lg">
-                    <Toolbar disableGutters>
-                        <Box sx={{ flexGrow: 1, display: "flex", alignItems: "center", justifyContent: "space-between", ml: -23 }}>
-                            <IconButton
-                                size="large"
-                                color="inherit"
-                                aria-label="menu"
-                                onClick={toggleDrawer(true)}
-                                sx={{ marginRight: "auto" }}
-                            >
-                                <MenuIcon />
-                            </IconButton>
-                            <Link to="/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}>
+
+            <style>
+                {`
+                @keyframes gradientBG {
+                    0% { background-position: 0% 50%; }
+                    70% { background-position: 100% 50%; } /* Move fully to the right */
+                    100% { background-position: 65% 50%; } /* Settle at 65% */
+                }
+            `}
+            </style>
+
+            <AppBar
+                position="fixed"
+                sx={{
+                    background: "linear-gradient(135deg, #141414, #2c2c2c, #5a4300, #b8860b)",
+                    backgroundSize: "300% 300%",
+                    animation: "gradientBG 10s ease-in-out forwards",
+                    color: "#ffffff",
+                }}
+            >
+                <Container maxWidth="lg" sx={{ width: "100%", px: 2 }}>
+                    <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+                        {/* Menu Button */}
+                        <IconButton color="inherit" onClick={toggleDrawer(true)} sx={{ marginLeft: "-200px" }}>
+                            <MenuIcon />
+                        </IconButton>
+
+                        {/* Logo and Title */}
+                        <Box sx={{ display: "flex", alignItems: "center", flexGrow: 1 }}>
+                            <Link to="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", color: "inherit", marginLeft: "100px" }}>
                                 <img
                                     src="https://flowbite.com/docs/images/logo.svg"
                                     alt="Logo"
-                                    style={{ height: "40px", marginRight: "10px", marginLeft: "-300px" }}
+                                    style={{ height: "40px", marginRight: "10px" }}
                                 />
-                                <Typography variant="h6" sx={{ fontWeight: "bold", color: "white" }}>
-                                    Expense Tracker
+                                <Typography variant="h6" sx={{ fontWeight: "bold", color: "#ffffff" }}>
+                                    Gastos Rastreador
                                 </Typography>
                             </Link>
                         </Box>
-                        <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" }, justifyContent: "flex-end" }}>
-                            <Button color="inherit" sx={{ marginRight: 2 }} onClick={() => navigate("/")}>Home</Button>
-                            <Button color="inherit" sx={{ marginRight: 2 }} onClick={() => navigate("/Settings")}>Settings</Button>
-                            <Button color="inherit" sx={{ marginRight: 2 }} onClick={() => navigate("/Category")}>Categories</Button>
-                            {localStorage.getItem("accountId") ? (
-                                <Button color="inherit" sx={{ marginRight: 2 }} onClick={() => logout()}>Log Out</Button>
+
+                        {/* Navigation Buttons */}
+                        <Box sx={{ display: { xs: "none", md: "flex" }, gap: 2 }}>
+                            <Button color="inherit" sx={{ color: "#ffffff" }} onClick={() => navigate("/")}>Home</Button>
+                            <Button color="inherit" sx={{ color: "#ffffff" }} onClick={() => navigate("/Category")}>Categories</Button>
+                            {token ? (
+                                <>
+                                    <IconButton onClick={handleMenuClick} sx={{ color: "white" }}>
+                                        <Avatar sx={{ bgcolor: "transparent" }}>
+                                            <AccountCircleIcon fontSize="large" />
+                                        </Avatar>
+                                    </IconButton>
+                                    <Menu
+                                        anchorEl={anchorEl}
+                                        open={open}
+                                        onClose={handleMenuClose}
+                                        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                                        transformOrigin={{ vertical: "top", horizontal: "right" }}
+                                    >
+                                        <MenuItem onClick={ () => {navigate("/Account"); handleMenuClose()}}>Profile</MenuItem>
+                                        <MenuItem onClick={() => {navigate("/Settings"); handleMenuClose()}}>Settings</MenuItem>
+                                        <MenuItem onClick={logout}>Logout</MenuItem>
+                                    </Menu>
+                                </>
                             ) : (
-                                <Button color="inherit" sx={{ marginRight: 2 }} onClick={() => navigate("/Login")}>
-                                    Login
+                                <Button color="inherit" sx={{ color: "#ffffff" }} onClick={() => navigate("/register")}>
+                                    Register
                                 </Button>
                             )}
                         </Box>
+
+                        {/* Dark Mode Toggle */}
+                        <IconButton onClick={() => setDarkMode(!darkMode)} color="inherit">
+                            {darkMode ? <Sun /> : <Moon />}
+                        </IconButton>
                     </Toolbar>
                 </Container>
             </AppBar>
 
-            <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
+            {/* Drawer for Mobile Navigation */}
+            <Drawer
+                anchor="left"
+                open={drawerOpen}
+                onClose={toggleDrawer(false)}
+                sx={{
+                    "& .MuiDrawer-paper": {
+                        marginTop: "64px", 
+                        height: "calc(100vh - 64px)",
+                        backgroundColor: "rgba(255, 255, 255, 0.1)",
+                        backdropFilter: "blur(10px)",
+                        borderRight: "1px solid rgba(255, 255, 255, 0.2)", 
+                        color: "#ffffff",
+                    }
+                }}
+            >
                 <Box sx={{ width: 250, p: 2 }}>
-                    <Typography variant="h6" gutterBottom>
-                        Navigation
-                    </Typography>
                     <List>
                         <ListItem button onClick={() => navigate("/Dashboard")}>
                             <ListItemText primary="Dashboard" />
@@ -85,25 +169,31 @@ const Navbar = () => {
                             <ListItemText primary="Report" />
                         </ListItem>
                     </List>
-                    <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
+
+                    <Divider sx={{ my: 2, borderColor: "rgba(255, 255, 255, 0.2)" }} />
+
+                    <Typography variant="h6" gutterBottom>
                         Settings
                     </Typography>
                     <List>
                         <ListItem>
                             <FormControlLabel
-                                control={<Switch checked={darkMode} onChange={() => setDarkMode(!darkMode)} />}
+                                control={<Switch />}
                                 label="Dark Mode"
                             />
                         </ListItem>
                         <ListItem>
                             <FormControlLabel
-                                control={<Switch checked={notifications} onChange={() => setNotifications(!notifications)} />}
+                                control={<Switch />}
                                 label="Notifications"
                             />
                         </ListItem>
                     </List>
                 </Box>
             </Drawer>
+
+
+
         </>
     );
 };

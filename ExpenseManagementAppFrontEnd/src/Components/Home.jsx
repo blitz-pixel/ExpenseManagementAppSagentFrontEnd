@@ -1,6 +1,14 @@
-import { Link } from "react-router-dom"
-import { Button, Typography, Container, Box, Grid, Card, CardContent, CardHeader, useTheme } from "@mui/material"
-import { motion } from "framer-motion"
+import { Link } from "react-router-dom";
+import {
+    Button,
+    Typography,
+    Container,
+    Box,
+    Card,
+    CardContent,
+    CardHeader,
+} from "@mui/material";
+import { motion } from "framer-motion";
 
 const features = [
     {
@@ -31,79 +39,117 @@ const features = [
         description:
             "Design a simple, intuitive UI that supports easy data entry and report generation, optimized for both desktop and mobile views.",
     },
-]
+];
+
 
 const Home = () => {
-    const theme = useTheme()
     return (
         <Box
             sx={{
                 minHeight: "100vh",
-                background: `linear-gradient(to bottom, ${theme.palette.primary.light}, ${theme.palette.background.default})`,
-                py: 8,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "20px",
             }}
         >
             <Container maxWidth="lg">
-                <motion.div initial={{ opacity: 0, y: -50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-                    <Box textAlign="center" mb={8}>
-                        <Typography variant="h2" component="h1" gutterBottom color="primary.main" fontWeight="bold">
+                <motion.div
+                    initial={{ opacity: 0, y: -50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    <Box
+                        sx={{
+                            width: "90vw",
+                            maxWidth: "1100px",
+                            py: 6,
+                            px: 3,
+                            textAlign: "center",
+                            borderRadius: "12px",
+                            boxShadow: "0 8px 16px rgba(255, 255, 255, 0.2)",
+                        }}
+                    >
+                        <Typography
+                            variant="h2"
+                            component="h1"
+                            fontWeight="bold"
+                            sx={{
+                                color: "white",
+                                textShadow: "0 4px 8px rgba(255, 255, 255, 0.3)",
+                            }}
+                        >
                             Welcome to Expense Tracker
                         </Typography>
-                        <Typography variant="h5" color="text.secondary" paragraph>
+                        <Typography variant="h5" color="white" paragraph>
                             Simplify your expense management and gain financial insights
                         </Typography>
-                        <Box mt={4}>
-                            <Button
-                                component={Link}
-                                to="/registration"
-                                variant="contained"
-                                color="primary"
-                                size="large"
-                                sx={{ mr: 2 }}
-                            >
-                                Register
-                            </Button>
-                            <Button
-                                component={Link}
-                                to="/login"
-                                variant="contained"
-                                color="primary"
-                                size="large"
-                            >
-                                Login
-                            </Button>
-                        </Box>
                     </Box>
                 </motion.div>
 
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.2 }}>
-                    <Typography variant="h4" component="h2" gutterBottom textAlign="center" color="text.primary" mb={4}>
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                >
+                    <Typography
+                        variant="h4"
+                        component="h2"
+                        color="white"
+                        textAlign="center"
+                        mt={6}
+                        mb={4}
+                        fontWeight="bold"
+                        sx={{ textShadow: "0 2px 6px rgba(255, 255, 255, 0.4)" }}
+                    >
                         Features and Workflow
                     </Typography>
-                    <Grid container spacing={4}>
+                    <Box
+                        sx={{
+                            display: "grid",
+                            gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+                            gap: 3,
+                        }}
+                    >
                         {features.map((feature, index) => (
-                            <Grid item xs={12} sm={6} md={4} key={index}>
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                            <motion.div
+                                key={index}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.3, delay: index * 0.1 }}
+                                whileHover={{ scale: 1.05 }}
+                            >
+                                <Card
+                                    sx={{
+                                        background: "rgba(255, 255, 255, 0.1)",
+                                        backdropFilter: "blur(10px)",
+                                        borderRadius: "12px",
+                                        boxShadow: "0 8px 16px rgba(255, 255, 255, 0.2)",
+                                        color: "white",
+                                        transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                                        "&:hover": {
+                                            transform: "translateY(-5px)",
+                                            boxShadow: "0 12px 25px rgba(255, 255, 255, 0.3)",
+                                        },
+                                    }}
                                 >
-                                    <Card raised sx={{ height: "100%" }}>
-                                        <CardHeader title={feature.title} titleTypographyProps={{ variant: "h6", color: "primary" }} />
-                                        <CardContent>
-                                            <Typography variant="body2" color="text.secondary">
-                                                {feature.description}
-                                            </Typography>
-                                        </CardContent>
-                                    </Card>
-                                </motion.div>
-                            </Grid>
+                                    <CardHeader
+                                        title={feature.title}
+                                        titleTypographyProps={{ variant: "h6", color: "white" }}
+                                    />
+                                    <CardContent>
+                                        <Typography variant="body2" color="white">
+                                            {feature.description}
+                                        </Typography>
+                                    </CardContent>
+                                </Card>
+                            </motion.div>
                         ))}
-                    </Grid>
+                    </Box>
                 </motion.div>
             </Container>
         </Box>
-    )
-}
+    );
+};
 
-export default Home
+export default Home;

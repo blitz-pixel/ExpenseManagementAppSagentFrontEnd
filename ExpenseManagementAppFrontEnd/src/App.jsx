@@ -3,7 +3,7 @@ import Registration from "./Components/Registration";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Login from "./Components/Login";
 import { Routes, Route, BrowserRouter as Router } from "react-router-dom";
-import "./App.css";
+import "./styles/App.css";
 import Home from "./Components/Home";
 import Dashboard from "./Components/Dashboard";
 
