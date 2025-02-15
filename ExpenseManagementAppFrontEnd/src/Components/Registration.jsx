@@ -12,6 +12,7 @@ import {useMutation, useQueryClient} from "@tanstack/react-query";
 const Registration = () => {
     // const queryClient = useQueryClient();
     const [formData, setFormData] = useState({
+        userName:"" ,
         email: "",
         password: "",
         confirmPassword: "",
@@ -109,7 +110,25 @@ const Registration = () => {
                 />
                 <h2>Register</h2>
 
-
+                <TextField
+                    fullWidth
+                    variant="outlined"
+                    margin="normal"
+                    name="userName"
+                    label="userName"
+                    type="text"
+                    value={formData.userName}
+                    onChange={handleChange}
+                    error={!errors.userName}
+                    helperText={errors.userName}
+                    InputProps={{
+                        startAdornment: (
+                            <InputAdornment position="start">
+                                <PersonAdd />
+                            </InputAdornment>
+                        ),
+                    }}
+                />
                 <TextField
                     fullWidth
                     variant="outlined"
