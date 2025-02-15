@@ -35,7 +35,7 @@ api.interceptors.request.use(
 
 
 const saveAuthToken = (token) => {
-    if (!token) return;
+    if (!token) return
     const expiresIn = 60 * 60 * 24 * 1000 ; // 24 hours
     const expiryTime = Date.now() + expiresIn;
     localStorage.setItem("accountId", token);
