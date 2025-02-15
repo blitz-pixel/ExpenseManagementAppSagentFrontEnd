@@ -16,7 +16,7 @@ const ExpenseModal = ({
     const [showModal, setShowModal] = useState(false);
     let parentCategories = categories.filter(category => category.SubCategoryName === "");
     const subcategories = categories.filter(
-        category => category.ParentCategoryName === newExpense.ParentCategoryName && category.SubCategoryName !== ""
+        category => category.ParentCategoryName === newTransaction.ParentCategoryName && category.SubCategoryName !== ""
     );
     // console.log(parentCategories[0])
     const onModalClose = () => {
@@ -46,19 +46,20 @@ const ExpenseModal = ({
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {transaction.map((expense, index) => (
-                                <TableRow key={expense.uuid}>
+                            {transaction.map((transaction, index) => (
+                                <TableRow key={transaction.uuid}>
                                     <TableCell>{index + 1}</TableCell>
-                                    <TableCell>{expense.ParentCategoryName}</TableCell>
-                                    <TableCell>{expense.SubCategoryName || "-"}</TableCell>
-                                    <TableCell>{expense.amount}</TableCell>
-                                    <TableCell>{new Date(expense.date).toLocaleDateString() || "-"}</TableCell>
+                                    <TableCell>{transaction.ParentCategoryName}</TableCell>
+                                    <TableCell>{transaction.SubCategoryName || "-"}</TableCell>
+                                    <TableCell>{transaction.amount}</TableCell>
+                                    {/*<TableCell>{new Date(transaction.date).toLocaleDateString() || "-"}</TableCell>*/}
                                     <TableCell>
+                                        {new Date(transaction.date).toLocaleDateString() || "-"}
                                         <IconButton
                                             size="small"
                                             sx={{ padding: 0, right: "-7px" }}
                                             edge="end"
-                                            onClick={() => removeExpense(expense.uuid)}
+                                            onClick={() =>  removeTransaction(transaction.uuid)}
                                         >
                                             <DeleteIcon />
                                         </IconButton>
@@ -95,7 +96,7 @@ const ExpenseModal = ({
                         <CategorySelectionMenu
                             parentCategories={parentCategories}
                             subCategories={subcategories}
-                            newExpense={newExpense}
+                            newExpense={newTransaction}
                             handleChange={handleChange}
                             // onModalClose={onModalClose}
                         />
@@ -106,7 +107,7 @@ const ExpenseModal = ({
                         variant="outlined"
                         fullWidth
                         type="number"
-                        value={newExpense.amount}
+                        value={newTransaction.amount}
                         onChange={(e) => handleChange("amount", e.target.value)}
                         sx={{ mb: 2 }}
                     />
@@ -116,7 +117,7 @@ const ExpenseModal = ({
                         variant="outlined"
                         fullWidth
                         type="date"
-                        value={newExpense.date?.split("T")[0] || ""}
+                        value={newTransaction.date?.split("T")[0] || ""}
                         onChange={(e) => handleChange("date", new Date(e.target.value).toISOString())}
                         sx={{ mb: 2 }}
                         InputLabelProps={{ shrink: true }}
@@ -128,11 +129,11 @@ const ExpenseModal = ({
                             variant="contained"
                             color="primary"
                             onClick={() => {
-                                handleAddExpense();
+                                handleAddTransaction();
                                 onModalClose();
                             }}
 
-                            disabled={!newExpense.ParentCategoryName || !newExpense.amount}
+                            disabled={!newTransaction.ParentCategoryName || !newTransaction.amount}
 
                             sx={{ mr: 1 }}
                         >

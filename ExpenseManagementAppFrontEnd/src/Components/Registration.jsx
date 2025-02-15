@@ -1,78 +1,99 @@
-import  { useState } from "react";
+import {useEffect, useReducer, useState} from "react";
 import axios from "axios";
 import {Link, Navigate} from "react-router-dom";
 import {api} from "../Templates/axiosInstance.js";
 import { motion } from "framer-motion"
-import { TextField, IconButton, InputAdornment, Button, Snackbar } from "@mui/material"
+import {TextField, IconButton, InputAdornment, Button, Snackbar, Alert} from "@mui/material"
 import { Visibility, VisibilityOff, PersonAdd, Email, Lock } from "@mui/icons-material"
+// import PersonIcon from '@mui/icons-material/Person';
 import "../styles/Registration.css"
 import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {Contact} from "lucide-react";
 
 
-const Registration = () => {
-    // const queryClient = useQueryClient();
-    const [formData, setFormData] = useState({
+const initialState = {
+    showPassword : false,
+    redirectLogin : false,
+    snackbar : {
+        open: false, message: "", severity: "",code : 0
+    },
+    formData : {
+        userName: "",
         email: "",
         password: "",
         confirmPassword: "",
-    });
-    const [showPassword, setShowPassword] = useState(false)
-    const [errors, setErrors] = useState({})
-    const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" })
-    const [isLogin,setIsLogin] = useState(false)
+    }
+}
 
-
+const reducer = (state,action) =>{
+    switch (action.type){
+        case "ADD_USER":
+            return {...state, formData: {...state.formData, [action.payload.field] : action.payload.value}}
+        case "RESET_USER":
+            return {...state,formData: {...initialState.formData}}
+        case "SET_SNACKBAR":
+            return {...state, snackbar: action.payload}
+        case "TOGGLE_PASSWORD":
+            return { ...state, showPassword: !state.showPassword }
+        case "SET_LOGIN":
+            return {...state,redirectLogin: !state.redirectLogin}
+        default:
+            return state
+    }
+}
+const Registration = () => {
+    // const queryClient = useQueryClient();
+    const [register, dispatch] = useReducer(reducer, initialState)
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value })
-        setErrors({ ...errors, [e.target.name]: "" })
+        dispatch({type : "ADD_USER", payload: {field : e.target.name, value: e.target.value}})
+        dispatch({type: "SET_SNACKBAR",payload: {open: false, message: "", severity: "",code : 0} })
+        // setSnackbar({open: false, message: "", severity: ""})
     }
     const validateForm = () => {
-        let isValid = true
-        const newErrors = {}
 
-        if (!formData.userName.trim()) {
-            newErrors.userName = "Username is required"
-            isValid = false
+        if (!register.formData.userName) {
+            dispatch({type: "SET_SNACKBAR",payload: { open: true, message: "Username is required", severity: "error",code: 101}})
+            return false
         }
 
-        if (!formData.email.trim()) {
-            newErrors.email = "Email is required"
-            isValid = false
-        } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-            newErrors.email = "Email is invalid"
-            isValid = false
+        if (!register.formData.email) {
+            dispatch({type: "SET_SNACKBAR",payload: { open: true, message: "Email is required", severity: "error",code : 102}})
+            return  false
+        } else if (!/\S+@\S+\.\S+/.test(register.formData.email)) {
+            dispatch({type: "SET_SNACKBAR",payload: { open: true, message: "Enter a valid email", severity: "error",code: 102}})
+            return  false
         }
 
-        if (!formData.password) {
-            newErrors.password = "Password is required"
-            isValid = false
-        } else if (formData.password.length < 6) {
-            newErrors.password = "Password must be at least 6 characters"
-            isValid = false
+        if (!register.formData.password) {
+            dispatch({type: "SET_SNACKBAR",payload: { open: true, message: "Enter a password", severity: "error",code : 103}})
+            return  false
+        } else if (register.formData.password.length < 8) {
+            dispatch({type: "SET_SNACKBAR",payload: { open: true, message: "Password should be minimum 8 characters", severity: "error",code : 103}})
+            return false
         }
 
-        if (formData.password !== formData.confirmPassword) {
-            newErrors.confirmPassword = "Passwords do not match"
-            isValid = false
+        if (register.formData.password !== register.formData.confirmPassword) {
+            dispatch({type: "SET_SNACKBAR",payload: { open: true, message:  "Passwords don't match", severity: "error",code : 104}})
+
+            return false
         }
 
-        setErrors(newErrors)
-        return isValid
     }
 
     const handleSubmitRequest = useMutation({
         mutationFn: async (formData) => {
+            console.log(formData)
             const response = await api.post("/Registration", formData)
             return response.data
         },
         onSuccess: () => {
-            setSnackbar({ open: true, message: "User registered successfully", severity: "success" })
-            setIsLogin(true)
+            dispatch({type: "SET_SNACKBAR",payload: { open: true, message:  "User registered Successfully", severity: "success"}})
+            dispatch({type: "SET_LOGIN"})
         },
         onError: (error) => {
-            setErrors({ emailError : error.response.data.message || "An error Occurred"})
-            setSnackbar({ open: true, message: "Registration failed", severity: "error" })
+            const errorToDisplay = error.response.data || "Registration failed";
+            dispatch({type: "SET_SNACKBAR",payload: { open: true, message:  errorToDisplay, severity: "success"}})
         }
     })
     const handleSubmit = (event) => {
@@ -82,34 +103,64 @@ const Registration = () => {
             return;
         }
 
-        handleSubmitRequest.mutate(formData);
+        handleSubmitRequest.mutate(register.formData);
+        dispatch({type : "RESET_USER"})
     };
 
-    const handleCloseSnackbar = () => {
-        setSnackbar({ ...snackbar, open: false })
-    }
+    const handleCloseSnackbar = (event, reason) => {
+        if (reason === "clickaway") return;
 
-    if (isLogin){
+        dispatch({
+            type: "SET_SNACKBAR",
+            payload: { open: false, message: "", severity: "" }
+        });
+    };
+
+
+    if (register.redirectLogin){
         return <Navigate  to="/Login" />
     }
     return (
+        <>
+        <Snackbar
+            open={register.snackbar.open}
+            autoHideDuration={6000}
+            onClose={handleCloseSnackbar}
+            message={register.snackbar.message}
+            // anchorOrigin={{vertical: "bottom" , horizontal: "right"}}
+        >
+            <Alert onClose={handleCloseSnackbar} severity={register.snackbar.severity}>
+                {register.snackbar.message}
+            </Alert>
+        </Snackbar>
         <motion.div
             className="auth-container"
             initial={{ opacity: 0, y: -50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
         >
+
             <form onSubmit={handleSubmit} className="auth-form">
-                <Snackbar
-                    open={snackbar.open}
-                    autoHideDuration={6000}
-                    onClose={handleCloseSnackbar}
-                    message={snackbar.message}
-                    severity={snackbar.severity}
-                />
                 <h2>Register</h2>
 
-
+                <TextField
+                    fullWidth
+                    variant="outlined"
+                    margin="normal"
+                    name="userName"
+                    label="userName"
+                    type="text"
+                    value={register.formData.userName}
+                    error={register.snackbar.open && register.snackbar.code === 101}
+                    onChange={handleChange}
+                    InputProps={{
+                        startAdornment: (
+                            <InputAdornment position="start">
+                                <PersonAdd />
+                            </InputAdornment>
+                        ),
+                    }}
+                />
                 <TextField
                     fullWidth
                     variant="outlined"
@@ -117,10 +168,9 @@ const Registration = () => {
                     name="email"
                     label="Email"
                     type="email"
-                    value={formData.email}
+                    value={register.formData.email}
                     onChange={handleChange}
-                    error={!errors.email}
-                    helperText={errors.email}
+                    error={register.snackbar.open  && register.snackbar.code === 102}
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
@@ -135,11 +185,10 @@ const Registration = () => {
                     margin="normal"
                     name="password"
                     label="Password"
-                    type={showPassword ? "text" : "password"}
-                    value={formData.password}
+                    type={register.showPassword ? "text" : "password"}
+                    value={register.password}
+                    error={register.snackbar.open  && register.snackbar.code === 103}
                     onChange={handleChange}
-                    error={!errors.password}
-                    helperText={errors.password}
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
@@ -150,10 +199,10 @@ const Registration = () => {
                             <InputAdornment position="end">
                                 <IconButton
                                     aria-label="toggle password visibility"
-                                    onClick={() => setShowPassword(!showPassword)}
+                                    onClick={() => dispatch({type: "TOGGLE_PASSWORD"})}
                                     edge="end"
                                 >
-                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    {register.showPassword ? <VisibilityOff /> : <Visibility />}
                                 </IconButton>
                             </InputAdornment>
                         ),
@@ -165,11 +214,10 @@ const Registration = () => {
                     margin="normal"
                     name="confirmPassword"
                     label="Confirm Password"
-                    type={showPassword ? "text" : "password"}
-                    value={formData.confirmPassword}
+                    type={"password"}
+                    value={register.formData.confirmPassword}
+                    error={register.snackbar.open && register.snackbar.code === 104}
                     onChange={handleChange}
-                    error={!!errors.confirmPassword}
-                    helperText={errors.confirmPassword}
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
@@ -187,6 +235,7 @@ const Registration = () => {
             </form>
 
         </motion.div>
+        </>
     )
 }
 

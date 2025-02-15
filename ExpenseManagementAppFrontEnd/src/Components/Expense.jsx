@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, CircularProgress } from "@mui/material";
+import {Box, CircularProgress, Snackbar} from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
 import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query";
 import { api } from "../Templates/axiosInstance.js";
@@ -11,6 +11,14 @@ const id = localStorage.getItem("accountId");
 
 const Expense = () => {
     const queryClient = useQueryClient();
+    const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "error" });
+    const [newExpense, setNewExpense] = useState({
+        // accountId: id,
+        ParentCategoryName: "",
+        SubCategoryName: "",
+        amount: "",
+        date: "",
+    });
 
     const queries = useQueries({
         queries: [
@@ -42,15 +50,16 @@ const Expense = () => {
     const categoriesQuery = queries[1];
 
     const { data: expenses, isLoading: isLoadingExpenses, error: expensesError } = expensesQuery;
-    const { data: categories, isLoading: isLoadingCategories, error: categoriesError } = categoriesQuery;
 
-    const [newExpense, setNewExpense] = useState({
-        // accountId: id,
-        ParentCategoryName: "",
-        SubCategoryName: "",
-        amount: "",
-        date: "",
-    });
+    // if (expensesError){
+    //     setSnackbar({ open: true, message: expensesError.message, severity: "ExpenseError" });
+    // }
+    const { data: categories, isLoading: isLoadingCategories, error: categoriesError } = categoriesQuery;
+    // if (categoriesError){
+    //     setSnackbar({ open: true, message: categoriesError.message, severity: "CategoryError" });
+    // }
+
+
 
     const handleAddExpense = useMutation({
         mutationFn: async (newExpense) => {
@@ -101,7 +110,14 @@ const Expense = () => {
 
     return (
         <div style={{ padding: "20px", maxWidth: "900px", margin: "auto" }}>
-            {error && <div style={{ color: "red" }}>Error: {error?.message}</div>}
+            {/*{error && <div style={{ color: "red" }}>Error: {error?.message}</div>}*/}
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={6000}
+                onClose={() => setSnackbar({ ...snackbar, open: false })}
+                message={snackbar.message}
+                severity={snackbar.severity}
+            />
             <TransactionFormModal
                 name="Expenses"
                 transaction={expenses || []}
