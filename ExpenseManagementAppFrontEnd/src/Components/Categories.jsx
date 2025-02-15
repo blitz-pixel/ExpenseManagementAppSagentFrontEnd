@@ -24,7 +24,10 @@ const initialState = {
     showModal: false,
     anchorEl: null,
     newCategory: { accountId: accountId, ParentCategoryName: "", SubCategoryName: "", type: "" },
-    error: ""
+    error: "",
+    snackbar : {
+        open: false, message: "", severity: "",code : 0
+    }
 };
 
 const reducer = (state, action) => {
@@ -41,6 +44,8 @@ const reducer = (state, action) => {
             return { ...state,  newCategory: { ...initialState.newCategory} };
         // case "REMOVE_CATEGORY":
         //     return { ...state, categories: state.categories.filter(c => c.id !== action.payload) };
+        case "SET_SNACKBAR":
+            return { ...state, snackbar: action.payload };
         case "SET_ERROR":
             return { ...state, error: action.payload };
         case "SET_NEW_CATEGORY":
@@ -64,10 +69,6 @@ const Category = () => {
             }));
         }
     })
-
-
-
-
 
 
     const addCategory = useMutation({
