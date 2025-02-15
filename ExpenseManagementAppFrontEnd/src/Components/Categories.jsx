@@ -9,7 +9,18 @@ import {
     IconButton,
     Paper,
     Snackbar,
-    Typography, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Modal, CircularProgress,
+    Typography,
+    TableContainer,
+    Table,
+    TableHead,
+    TableRow,
+    TableCell,
+    TableBody,
+    Modal,
+    CircularProgress,
+    Alert,
+    Dialog,
+    DialogTitle, DialogContent, DialogActions
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
@@ -26,7 +37,12 @@ const initialState = {
     newCategory: { accountId: accountId, ParentCategoryName: "", SubCategoryName: "", type: "" },
     error: "",
     snackbar : {
-        open: false, message: "", severity: "",code : 0
+        open: true, message: "", severity: "",code : 0
+    },
+    dialog : {
+        open: false,
+        message: "",
+        NameToDelete : ""
     }
 };
 
@@ -42,10 +58,10 @@ const reducer = (state, action) => {
         //     return { ...state, categories: action.payload };
         case "ADD_CATEGORY":
             return { ...state,  newCategory: { ...initialState.newCategory} };
-        // case "REMOVE_CATEGORY":
-        //     return { ...state, categories: state.categories.filter(c => c.id !== action.payload) };
         case "SET_SNACKBAR":
             return { ...state, snackbar: action.payload };
+        case "SET_DIALOG":
+            return {...state, dialog: action.payload};
         case "SET_ERROR":
             return { ...state, error: action.payload };
         case "SET_NEW_CATEGORY":
@@ -58,17 +74,19 @@ const reducer = (state, action) => {
 const Category = () => {
     const queryClient = useQueryClient();
     const [category, dispatch] = useReducer(reducer, initialState);
-    const isDisabled = !category.newCategory.ParentCategoryName || !category.newCategory.type;
-    const { data : categories, isLoading : isFetchingCategory }  = useQuery({
+    const { data : categories, isLoading : isFetchingCategory, isError: isCategoryError }  = useQuery({
         queryKey: ["categories", accountId],
         queryFn: async () => {
+            try {
             const response = await api.get(`/categories?Id=${accountId}`);
             return (Array.isArray(response.data) ? response.data : []).map(category => ({
                 id: uuidv4(),
                 ...category
             }));
+        } catch (error) {
+            dispatch({ type: "SET_ERROR", payload: error.response.data });
         }
-    })
+    }})
 
 
     const addCategory = useMutation({
@@ -83,13 +101,13 @@ const Category = () => {
         },
         onError: (error) => {
             console.error("Error adding new category:", error);
-            dispatch({ type: "SET_ERROR", payload: error.message});
+            dispatch({ type: "SET_SNACKBAR", payload: {open : true, message: error.response.data, severity: "error", code: 101 }});
         }
     });
 
 
     const addCategoryHandler = () => {
-        dispatch({ type: "SET_ERROR", payload: "" });
+        dispatch({ type: "SET_SNACKBAR", payload: {...initialState, open: false}});
         addCategory.mutate(category.newCategory);
     };
 
@@ -104,13 +122,11 @@ const Category = () => {
         },
         onError: (error) => {
             console.error("Error adding new category:", error);
-            dispatch({ type: "SET_ERROR", payload: error.response.data});
+            dispatch({ type: "SET_SNACKBAR", payload: {open: true, message: error.response.data, severity: "error", code: 102} });
         }
     })
 
     const deleteCategoryHandler = (name) => {
-        console.log("in handle func: " + name)
-
         return removeCategory.mutate({ accountId, name })
     }
 
@@ -121,23 +137,76 @@ const Category = () => {
     const handleMenuClose = () => {
         dispatch({ type: "SET_ANCHOR", payload: null });
     };
+
+    const handleSnackbarClose = () => {
+        dispatch({ type: "SET_SNACKBAR", payload: {...initialState, open: false}});
+    }
     const isLoading = isFetchingCategory || addCategory.isPending;
     category.error = category.error || "Error fetching Categories";
     
 
-
-
     if (isLoading)
         return (
             <Box>
+                    <Snackbar
+                        open = {category.snackbar.open}
+                        autoHideDuration={6000}
+                        onClose={handleSnackbarClose}
+                    >
+                        <Alert onClose={handleSnackbarClose} severity={"info"}>
+                            {"fetching Categories..."}
+                        </Alert>
+                    </Snackbar>
                 <CircularProgress />
             </Box>
         );
-    return (
-        <Box sx={{ maxWidth: 400, mx: "auto", mt: 4 }}>
-            {category.error && <Typography color="error">{category.error}</Typography>}
-            <Button variant="contained" color="primary" onClick={() => dispatch({ type: "TOGGLE_MODAL" })}>Add Category</Button>
 
+
+    if (isCategoryError){
+        return (
+            <>
+                <Snackbar
+                    open = {category.snackbar.open}
+                    autoHideDuration={6000}
+                    onClose={handleSnackbarClose}
+                >
+                        <Alert onClose={handleSnackbarClose} severity={category.snackbar.severity}>
+                            {category.snackbar.message}
+                        </Alert>
+                </Snackbar>
+            </>
+        )
+    }
+    return (
+        <>
+
+            <Snackbar
+                open = {category.snackbar.open}
+                autoHideDuration={6000}
+                onClose={handleSnackbarClose}
+            >
+                <Alert onClose={handleSnackbarClose} severity={category.snackbar.severity}>
+                    {category.snackbar.message}
+                </Alert>
+            </Snackbar>
+
+            <Dialog open={category.dialog.open} onClose={() => dispatch({ type: "SET_DIALOG",payload: initialState.dialog})}>
+                <DialogTitle>Delete Category</DialogTitle>
+                <DialogContent>
+                    <p>{category.dialog.message}</p>
+                </DialogContent>
+                <DialogActions>
+                    <Button color="red" onClick={() =>
+                    {
+                        deleteCategoryHandler(category.dialog.NameToDelete)
+                        dispatch({ type: "SET_DIALOG" , payload: initialState.dialog})
+                    }}>
+                        Delete
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        <Box sx={{ maxWidth: 400, mx: "auto", mt: 4 }}>
+            <Button variant="contained" color="primary" onClick={() => dispatch({ type: "TOGGLE_MODAL" })}>Add Category</Button>
             {categories?.length > 0 && (
                 <TableContainer component={Paper} sx={{ mt: 2 }}>
                     <Table>
@@ -163,8 +232,13 @@ const Category = () => {
                                             edge="end"
                                             onClick={() => {
                                                 const name = item.SubCategoryName ? item.SubCategoryName : item.ParentCategoryName;
-                                                console.log("Name selected:", name);
-                                                deleteCategoryHandler(name)
+                                                if (name === item.SubCategoryName) {
+                                                    dispatch({type: "SET_DIALOG", payload: {open: true, message: `Are you sure you want to delete ${name}? 
+                                                    Deleting this will also delete the related transactions.`, NameToDelete : name}})
+                                                } else {
+                                                    dispatch({type: "SET_DIALOG", payload: {open: true, message: `Are you sure you want to delete ${name}? 
+                                                    Deleting this will also delete the related Sub-Categories and transactions.`, NameToDelete : name}})
+                                                }
                                                 // console.log("SubCategoryName:", item.SubCategoryName);
                                                 // console.log("ParentCategoryName:", item.ParentCategoryName);
                                             }
@@ -196,12 +270,13 @@ const Category = () => {
                     </Menu>
 
                     <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
-                        <Button variant="contained" color="primary" onClick={addCategoryHandler} disabled={isDisabled} sx={{ mr: 1 }}>Save</Button>
+                        <Button variant="contained" color="primary" onClick={addCategoryHandler} disabled={!category.newCategory.ParentCategoryName || !category.newCategory.type} sx={{ mr: 1 }}>Save</Button>
                         <Button variant="outlined" onClick={() => dispatch({ type: "TOGGLE_MODAL" })}>Cancel</Button>
                     </Box>
                 </Box>
             </Modal>
         </Box>
+        </>
     );
 };
 
