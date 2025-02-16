@@ -1,8 +1,31 @@
 import { WalletCards, Receipt, FileText, BarChart3 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Box, Grid, Typography, Button } from "@mui/material";
+import {
+    Box,
+    Grid,
+    Typography,
+    Button,
+    TableHead,
+    TableContainer,
+    TableRow,
+    TableCell,
+    TableBody,
+    Paper,
+    Table, CircularProgress
+} from "@mui/material";
+import {useQuery} from "@tanstack/react-query";
+import {api} from "../Templates/axiosInstance.js";
 
+const accountId = localStorage.getItem("accountId");
 function Dashboard() {
+
+    const {data: transactions, isLoading,isError} = useQuery({
+        queryKey: ["transactions", accountId],
+        queryFn: async () => {
+            const res = await api.get(`/transactions/all?accountId=${accountId}`);
+            return res.data || [];
+        },
+    })
     const cardData = [
         {
             title: "INCOME OVERVIEW",
@@ -21,15 +44,8 @@ function Dashboard() {
             description: "Generate detailed financial reports for analysis. Get a clear view of profits, losses, and balances.",
             link: "/Report",
             icon: <FileText size={52} />,
-        },
-        {
-            title: "RECENT TRANSACTIONS",
-            description: "Review the latest transactions and account activities. Keep track of every financial movement with precision.",
-            link: "/Transactions",
-            icon: <BarChart3 size={52} />,
-        },
+        }
     ];
-
     return (
         <Box
             sx={{
@@ -47,8 +63,7 @@ function Dashboard() {
                     maxWidth: "900px",
                     justifyContent: "center",
                 }}
-            >
-                {cardData.map((card, index) => (
+            >{cardData.map((card, index) => (
                     <Grid
                         item
                         xs={12}
@@ -127,6 +142,83 @@ function Dashboard() {
                         </Box>
                     </Grid>
                 ))}
+                <Grid
+                    item
+                    xs={12}
+                    sm={6}
+                    sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                    }}
+                >
+                    <Box
+                        sx={{
+                            width: "100%",
+                            maxWidth: "500px",
+                            background: "linear-gradient(to bottom, #d4a017, #b8860b)",
+                            borderRadius: "15px",
+                            border: "3px solid #a37412",
+                            boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.3)",
+                            padding: 3,
+                        }}
+                    >{isLoading || isError ? (
+                        <CircularProgress sx={{
+                            position: "absolute",
+                            justifyContent : "center",
+                            marginTop: "80px",
+                            marginLeft: "-20px",
+                            color: "#7c5f13",
+                        }} />
+                    ) : (
+                        <>
+                            <Typography
+                                variant="h6" // Fixed incorrect variant
+                                sx={{
+                                    fontWeight: "bold",
+                                    fontFamily: "Arial, sans-serif",
+                                    color: "#000",
+                                    textAlign: "center",
+                                    marginBottom: 2,
+                                    textTransform: "uppercase",
+                                }}
+                            >
+                                Recent Transactions
+                            </Typography>
+                            <TableContainer component={Paper} sx={{ background: "transparent", boxShadow: "none" }}>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell sx={{ fontWeight: "bold", color: "#000" }}>Date</TableCell>
+                                            <TableCell sx={{ fontWeight: "bold", color: "#000" }}>Amount</TableCell>
+                                            <TableCell sx={{ fontWeight: "bold", color: "#000" }}>Type</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {(transactions || []).map((transaction, index) => (
+                                            <TableRow
+                                                key={transaction.uuid}
+                                                sx={{
+                                                    backgroundColor: index % 2 === 0 ? "#534904" : "#b8860b", // Alternating row colors
+                                                }}
+                                            >
+                                                <TableCell sx={{ color: "#000" }}>
+                                                    {new Date(transaction.date).toLocaleDateString()} {/* Fix date formatting */}
+                                                </TableCell>
+                                                <TableCell sx={{ color: "#000" }}>
+                                                    {transaction.amount}
+                                                </TableCell>
+                                                <TableCell sx={{ color: "#000" }}>
+                                                    {transaction.type}
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </>
+                    )}
+                    </Box>
+                </Grid>
             </Grid>
         </Box>
     );

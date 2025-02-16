@@ -34,7 +34,7 @@ const accountId = localStorage.getItem("accountId") || "";
 const initialState = {
     showModal: false,
     anchorEl: null,
-    newCategory: { accountId: accountId, ParentCategoryName: "", SubCategoryName: "", type: "" },
+    newCategory: { ParentCategoryName: "", SubCategoryName: "", type: "" },
     error: "",
     snackbar : {
         open: true, message: "", severity: "",code : 0
@@ -208,27 +208,49 @@ const Category = () => {
         <Box sx={{ maxWidth: 400, mx: "auto", mt: 4 }}>
             <Button variant="contained" color="primary" onClick={() => dispatch({ type: "TOGGLE_MODAL" })}>Add Category</Button>
             {categories?.length > 0 && (
-                <TableContainer component={Paper} sx={{ mt: 2 }}>
-                    <Table>
+                <TableContainer component={Paper} sx={{ mt: 2 ,
+                    background: "rgba(255, 255, 255, 0.9)", // Slight transparency for depth
+                    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)", // Embossed effect
+                    borderRadius: "10px", // Smooth corners
+                    overflow: "hidden",
+                }}>
+                    <Table sx={{
+                        borderCollapse: "separate", // Avoids default border collapse
+                        borderSpacing: "0px", // Removes unwanted gaps
+                    }}>
                         <TableHead>
-                            <TableRow>
-                                <TableCell>S.No</TableCell>
-                                <TableCell>Category</TableCell>
-                                <TableCell>Parent-Category</TableCell>
-                                <TableCell>Type</TableCell>
+                            <TableRow sx={{ background: "#333" }} >
+                                <TableCell sx={{ fontWeight: "bold", color: "#fff", padding: "12px", borderBottom: "none" }}>S.No</TableCell>
+                                <TableCell sx={{ fontWeight: "bold", color: "#fff", padding: "12px", borderBottom: "none" }}>Category</TableCell>
+                                <TableCell sx={{ fontWeight: "bold", color: "#fff", padding: "12px", borderBottom: "none" }}>Parent-Category</TableCell>
+                                <TableCell sx={{ fontWeight: "bold", color: "#fff", padding: "12px", borderBottom: "none" }}>Type</TableCell>
+                                <TableCell sx={{ fontWeight: "bold", color: "#fff", padding: "12px", borderBottom: "none" }}>Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {categories.map((item, index) => (
-                                <TableRow key={item.id}>
-                                    <TableCell>{index + 1}</TableCell>
-                                    <TableCell>{item.SubCategoryName || item.ParentCategoryName || "-"}</TableCell>
-                                    <TableCell>{item.SubCategoryName ? item.ParentCategoryName : "-"}</TableCell>
-                                    <TableCell>{item.type || "-"}</TableCell>
-                                    <TableCell>
+                                <TableRow key={item.id} sx={{
+                                    backgroundColor: index % 2 === 0 ? "#534904" : "#b8860b",
+                                    "&:hover": {
+                                        backgroundColor: "#a67c00",
+                                        boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.3)",
+                                        transform: "scale(1.02)",
+                                    },
+                                    transition: "background 0.3s, box-shadow 0.3s, transform 0.3s",
+                                }}>
+                                    <TableCell sx={{ color: "#fff", padding: "12px", border: "none" }}>{index + 1}</TableCell>
+                                    <TableCell sx={{ color: "#fff", padding: "12px", border: "none" }}>{item.SubCategoryName || item.ParentCategoryName || "-"}</TableCell>
+                                    <TableCell sx={{ color: "#fff", padding: "12px", border: "none" }}>{item.SubCategoryName ? item.ParentCategoryName : "-"}</TableCell>
+                                    <TableCell sx={{ color: "#fff", padding: "12px", border: "none" }}>{item.type || "-"}</TableCell>
+                                    <TableCell sx={{ color: "#fff", padding: "12px", border: "none" }}>
                                         <IconButton
                                             size="small"
-                                            sx={{ padding: 0, right: "-7px" }}
+                                            sx={{
+                                                padding: 0,
+                                                right: "-7px",
+                                                color: "#fff",
+                                                "&:hover": { color: "#ff4d4d" },
+                                            }}
                                             edge="end"
                                             onClick={() => {
                                                 const name = item.SubCategoryName ? item.SubCategoryName : item.ParentCategoryName;
@@ -255,7 +277,18 @@ const Category = () => {
             )}
 
             <Modal open={category.showModal} onClose={() => dispatch({ type: "TOGGLE_MODAL" })}>
-                <Box sx={{ width: 400, bgcolor: "white", p: 3, borderRadius: "8px", boxShadow: 24, position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}>
+                <Box sx={{
+                    width: 400,
+                    bgcolor: "white",
+                    borderRadius: "8px",
+                    p: 3,
+                    position: "absolute",
+                    top: "50%",             // Ensure the modal appears at the top of the page
+                    left: "50%",        // Center the modal horizontally
+                    transform: "translate(-50%, -50%)", // Center the modal horizontally
+                    boxShadow: 24,
+                    zIndex: 1300,       // Ensure the modal is above all other content
+                }}>
 
                     <Typography variant="h6">Add Revenue/Expense</Typography>
                     <TextField label="Category" fullWidth sx={{ mb: 2 }} value={category.newCategory.ParentCategoryName} onChange={(e) => handleChange("ParentCategoryName", e.target.value)} />

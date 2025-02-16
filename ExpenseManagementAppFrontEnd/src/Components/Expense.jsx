@@ -16,6 +16,7 @@ const Expense = () => {
         // accountId: id,
         ParentCategoryName: "",
         SubCategoryName: "",
+        Description: "",
         amount: "",
         date: "",
     });

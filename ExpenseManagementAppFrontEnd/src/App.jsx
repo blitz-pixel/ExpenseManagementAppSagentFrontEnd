@@ -16,6 +16,7 @@ import Layout from "./Templates/Layout.jsx";
 import Settings from "./Components/Settings.jsx";
 import ProtectedRoute from "./Templates/Protected.jsx";
 import Report from "./Components/Report.jsx";
+import Recurring from "./Components/Recurring.jsx";
 // import Todos from "./Templates/Test.jsx";
 
 const App = () => {
@@ -39,7 +40,9 @@ const App = () => {
                                 <Route path="/Expense" element={<Expense />} />
                                 <Route path="/Revenue" element={<Revenue />} />
                                 <Route path="/Category" element={<Categories />} />
-                                <Route path="/Settings" element={<Settings />} />
+                                <Route path="/Settings" element={<Settings />}/>
+                                <Route path="/Recurring" element={<Recurring/>} />
+
                             </Route>
                         </Route>
                     </Routes>

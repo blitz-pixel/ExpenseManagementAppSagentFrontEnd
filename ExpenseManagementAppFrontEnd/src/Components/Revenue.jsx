@@ -48,6 +48,7 @@ const Revenue = () => {
         // accountId: id,
         ParentCategoryName: "",
         SubCategoryName: "",
+        Description: "",
         amount: "",
         date: "",
     });
