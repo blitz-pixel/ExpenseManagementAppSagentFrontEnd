@@ -1,5 +1,5 @@
 import { useState } from "react";
-import {Box, CircularProgress, Snackbar} from "@mui/material";
+import {Alert, Box, CircularProgress, Snackbar} from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
 import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query";
 import { api } from "../Templates/axiosInstance.js";
@@ -11,7 +11,7 @@ const id = localStorage.getItem("accountId");
 
 const Expense = () => {
     const queryClient = useQueryClient();
-    const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "error" });
+    const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "error",code : 0 });
     const [newExpense, setNewExpense] = useState({
         // accountId: id,
         ParentCategoryName: "",
@@ -76,7 +76,8 @@ const Expense = () => {
             });
             queryClient.invalidateQueries(["expenses", id]);
         },
-        onError: (error) => console.error("Error adding new expense:", error),
+        onError: (error) => {console.error("Error adding new expense:", error)
+        setSnackbar({ open: true, message: error.response.data, severity: "error",code : 0 });},
     });
 
     const removeExpense = useMutation({
@@ -84,22 +85,39 @@ const Expense = () => {
             await api.delete(`/expense/delete?uuid=${uuid}`)
         },
         onSuccess: () => queryClient.invalidateQueries(["expenses", id]),
-        onError: (error) => console.error("Error deleting expense:", error),
+        onError: (error) => {console.error("Error deleting expense:", error)
+            setSnackbar({ open: true, message: error.response.data, severity: "error",code : 0 });},
     });
 
     const handleChange = (field, value) => {
         setNewExpense({ ...newExpense, [field]: value });
     };
 
-    const isLoading = isLoadingExpenses || isLoadingCategories;
-    const error = expensesError || categoriesError || handleAddExpense.error || removeExpense.error;
 
-    if (isLoading)
+    const isLoading = isLoadingExpenses || isLoadingCategories;
+    const error = expensesError || categoriesError;
+    const isFetching = isLoading || error;
+
+    if (isFetching) {
         return (
             <Box>
-                <CircularProgress />
+                <Snackbar
+                    open={snackbar.open}
+                    autoHideDuration={6000}
+                    anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                    onClose={() => setSnackbar({ ...snackbar, open: false })}
+                >
+                    <Alert
+                        onClose={() => setSnackbar({ ...snackbar, open: false })}
+                        severity={error ? "error" : "info"}
+                    >
+                        {error ? error?.message : "Fetching Expenses..."}
+                    </Alert>
+                </Snackbar>
+                {isLoading && <CircularProgress />}
             </Box>
         );
+    }
 
     const addExpenseHandler = () => {
         handleAddExpense.mutate(newExpense);
@@ -115,9 +133,12 @@ const Expense = () => {
                 open={snackbar.open}
                 autoHideDuration={6000}
                 onClose={() => setSnackbar({ ...snackbar, open: false })}
-                message={snackbar.message}
-                severity={snackbar.severity}
-            />
+                anchorOrigin={{ vertical: "top", horizontal: "right" }}
+            >
+                <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity}>
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
             <TransactionFormModal
                 name="Expenses"
                 transaction={expenses || []}
@@ -126,6 +147,8 @@ const Expense = () => {
                 newTransaction={newExpense}
                 handleChange={handleChange}
                 handleAddTransaction={addExpenseHandler}
+                snackBar={snackbar}
+                setSnackBar={setSnackbar}
             />
         </div>
     );

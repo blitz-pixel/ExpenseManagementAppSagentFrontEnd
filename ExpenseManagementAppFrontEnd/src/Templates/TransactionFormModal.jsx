@@ -14,16 +14,21 @@ const ExpenseModal = ({
                           handleAddTransaction
                       }) => {
     const [showModal, setShowModal] = useState(false);
+
     let parentCategories = categories.filter(category => category.SubCategoryName === "");
     const subcategories = categories.filter(
         category => category.ParentCategoryName === newTransaction.ParentCategoryName && category.SubCategoryName !== ""
     );
+
     // console.log(parentCategories[0])
     const onModalClose = () => {
         handleChange("ParentCategoryName", "");
         handleChange("SubCategoryName", "");
         setShowModal(false)
     }
+
+
+
     return (
         <div>
             {/* Header Section with Proper Alignment */}
@@ -95,7 +100,7 @@ const ExpenseModal = ({
                     <Box sx={{ mb: 2 }}>
                         <CategorySelectionMenu
                             parentCategories={parentCategories}
-                            subCategories={subcategories}
+                            subCategories={subcategories || []}
                             newExpense={newTransaction}
                             handleChange={handleChange}
                             // onModalClose={onModalClose}
@@ -133,7 +138,7 @@ const ExpenseModal = ({
                                 onModalClose();
                             }}
 
-                            disabled={!newTransaction.ParentCategoryName || !newTransaction.amount}
+                            disabled={!newTransaction.ParentCategoryName || !newTransaction.amount }
 
                             sx={{ mr: 1 }}
                         >

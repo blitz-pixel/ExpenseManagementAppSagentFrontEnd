@@ -1,71 +1,135 @@
-import { WalletCards, Receipt, FileText, BarChart3 } from "lucide-react"
-import { Link } from "react-router-dom"
-import { Box, Grid, Paper, Typography, Button } from "@mui/material"
+import { WalletCards, Receipt, FileText, BarChart3 } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Box, Grid, Typography, Button } from "@mui/material";
 
 function Dashboard() {
     const cardData = [
         {
-            title: "Income Overview",
-            description: "Manage and track all your income streams here.",
+            title: "INCOME OVERVIEW",
+            description: "Monitor and manage all your revenue sources effectively. Stay updated on earnings and cash flow trends.",
             link: "/Revenue",
-            icon: <WalletCards />,
+            icon: <WalletCards size={52} />, // Increased icon size
         },
         {
-            title: "Expense Overview",
-            description: "Keep track of your expenses and manage your budgets.",
+            title: "EXPENSE OVERVIEW",
+            description: "Track all your expenses in one place. Get insights into spending patterns and budget allocations.",
             link: "/Expense",
-            icon: <Receipt />,
+            icon: <Receipt size={52} />,
         },
-        { title: "Report", description: "Generate and view financial reports here.", link: "/Report", icon: <FileText /> },
         {
-            title: "Recent Transactions",
-            description: "View  transactions here.",
-            link: "/Transactions",
-            icon: <BarChart3 />,
+            title: "FINANCIAL REPORTS",
+            description: "Generate detailed financial reports for analysis. Get a clear view of profits, losses, and balances.",
+            link: "/Report",
+            icon: <FileText size={52} />,
         },
-    ]
+        {
+            title: "RECENT TRANSACTIONS",
+            description: "Review the latest transactions and account activities. Keep track of every financial movement with precision.",
+            link: "/Transactions",
+            icon: <BarChart3 size={52} />,
+        },
+    ];
 
     return (
-        <Box sx={{ padding: 3, backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
-            <Typography variant="h4" sx={{ marginBottom: 3, fontWeight: "bold", color: "#333" }}>
-                Financial Dashboard
-            </Typography>
-            <Grid container spacing={3}>
+        <Box
+            sx={{
+                height: "100vh",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                background: "transparent",
+            }}
+        >
+            <Grid
+                container
+                spacing={4}
+                sx={{
+                    maxWidth: "900px",
+                    justifyContent: "center",
+                }}
+            >
                 {cardData.map((card, index) => (
-                    <Grid item xs={12} sm={6} key={index}>
-                        <Link to={card.link} style={{ textDecoration: "none" }}>
-                            <Paper
+                    <Grid
+                        item
+                        xs={12}
+                        sm={6} // 2 cards per row on small+ screens
+                        key={index}
+                        sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                        }}
+                    >
+                        <Box
+                            sx={{
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                width: "350px", // Increased width
+                                height: "220px", // Increased height
+                                padding: 3,
+                                background: "linear-gradient(to bottom, #d4a017, #b8860b)",
+                                borderRadius: "15px",
+                                border: "3px solid #a37412",
+                                boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.3)",
+                                transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
+                                "&:hover": {
+                                    transform: "translateY(-4px)",
+                                    boxShadow: "0px 12px 20px rgba(0, 0, 0, 0.4)",
+                                },
+                            }}
+                        >
+                            {card.icon}
+                            <Typography
+                                variant="h5" // Increased text size
                                 sx={{
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    height: "100%",
-                                    padding: 3,
-                                    boxShadow: 3,
-                                    borderRadius: 2,
-                                    transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
-                                    "&:hover": {
-                                        transform: "translateY(-5px)",
-                                        boxShadow: 6,
-                                    },
+                                    fontWeight: "bold",
+                                    fontFamily: "Arial, sans-serif",
+                                    color: "#000",
+                                    textAlign: "center",
+                                    marginTop: 1,
+                                    textTransform: "uppercase",
+                                    fontSize: "1rem",
+                                    letterSpacing: "1px",
                                 }}
                             >
-                                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 2 }}>
-                                    <Typography variant="h5" sx={{ fontWeight: "bold", color: "#1976d2" }}>
-                                        {card.title}
-                                    </Typography>
-                                    {card.icon}
-                                </Box>
-                                <Typography sx={{ flexGrow: 1, marginBottom: 2, color: "#666" }}>{card.description}</Typography>
-                                <Button variant="contained" color="primary" sx={{ alignSelf: "flex-start" }}>
+                                {card.title}
+                            </Typography>
+                            <Typography
+                                sx={{
+                                    fontSize: "0.9rem", // Slightly larger text for readability
+                                    fontFamily: "Arial, sans-serif",
+                                    color: "#000",
+                                    textAlign: "center",
+                                    padding: "0 10px",
+                                    marginBottom: 2,
+                                }}
+                            >
+                                {card.description}
+                            </Typography>
+                            <Link to={card.link} style={{ textDecoration: "none" }}>
+                                <Button
+                                    variant="contained"
+                                    sx={{
+                                        backgroundColor: "#6b4f1d",
+                                        color: "#fff",
+                                        fontFamily: "Arial, sans-serif",
+                                        fontWeight: "bold",
+                                        textTransform: "uppercase",
+                                        fontSize: "0.9rem",
+                                        padding: "8px 14px",
+                                        "&:hover": { backgroundColor: "#5a3f14" },
+                                    }}
+                                >
                                     View Details
                                 </Button>
-                            </Paper>
-                        </Link>
+                            </Link>
+                        </Box>
                     </Grid>
                 ))}
             </Grid>
         </Box>
-    )
+    );
 }
 
-export default Dashboard
+export default Dashboard;
