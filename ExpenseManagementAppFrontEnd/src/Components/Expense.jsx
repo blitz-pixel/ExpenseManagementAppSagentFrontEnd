@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import {Alert, Box, CircularProgress, Snackbar} from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
 import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query";
@@ -11,12 +11,14 @@ const id = localStorage.getItem("accountId");
 
 const Expense = () => {
     const queryClient = useQueryClient();
-    const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "error",code : 0 });
+    const [snackbar, setSnackbar] = useState({ open: true, message: "", severity: "error",code : 0 });
     const [newExpense, setNewExpense] = useState({
         // accountId: id,
         ParentCategoryName: "",
         SubCategoryName: "",
         Description: "",
+        isRecurring: false,
+        frequency: "NONE",
         amount: "",
         date: "",
     });
@@ -60,7 +62,11 @@ const Expense = () => {
     //     setSnackbar({ open: true, message: categoriesError.message, severity: "CategoryError" });
     // }
 
-
+    useEffect(() => {
+        if (categories && categories.length === 0) {
+            setSnackbar({ open: true, message: "Please add a Expense category first", severity: "error",code : 110 });
+        }
+    }, [categories]);
 
     const handleAddExpense = useMutation({
         mutationFn: async (newExpense) => {
@@ -68,16 +74,21 @@ const Expense = () => {
             // return response.data;
         },
         onSuccess: () => {
+            setSnackbar({ open: true, message: "Expense added successfully", severity: "success" });
             setNewExpense({
                 // accountId: id,
                 ParentCategoryName: "",
                 SubCategoryName: "",
                 amount: "",
                 date: "",
+                Description: "",
+                isRecurring: false,
+                frequency: "NONE",
             });
             queryClient.invalidateQueries(["expenses", id]);
         },
-        onError: (error) => {console.error("Error adding new expense:", error)
+        onError: (error) =>
+        {console.error("Error adding new expense:", newExpense)
         setSnackbar({ open: true, message: error.response.data, severity: "error",code : 0 });},
     });
 
@@ -85,7 +96,10 @@ const Expense = () => {
         mutationFn: async (uuid) => {
             await api.delete(`/expense/delete?uuid=${uuid}`)
         },
-        onSuccess: () => queryClient.invalidateQueries(["expenses", id]),
+        onSuccess: () =>{
+            setSnackbar({ open: true, message: "Expense Deleted successfully", severity: "success" });
+            queryClient.invalidateQueries(["expenses", id])
+        },
         onError: (error) => {console.error("Error deleting expense:", error)
             setSnackbar({ open: true, message: error.response.data, severity: "error",code : 0 });},
     });
@@ -115,7 +129,7 @@ const Expense = () => {
                         {error ? error?.message : "Fetching Expenses..."}
                     </Alert>
                 </Snackbar>
-                {isLoading && <CircularProgress />}
+                {isLoading && <CircularProgress  sx={{color: "#7c5f13"}}/>}
             </Box>
         );
     }
@@ -131,7 +145,7 @@ const Expense = () => {
         <div style={{ padding: "20px", maxWidth: "900px", margin: "auto" }}>
             {/*{error && <div style={{ color: "red" }}>Error: {error?.message}</div>}*/}
             <Snackbar
-                open={snackbar.open}
+                open={snackbar.open && snackbar.code !== 0}
                 autoHideDuration={6000}
                 onClose={() => setSnackbar({ ...snackbar, open: false })}
                 anchorOrigin={{ vertical: "top", horizontal: "right" }}

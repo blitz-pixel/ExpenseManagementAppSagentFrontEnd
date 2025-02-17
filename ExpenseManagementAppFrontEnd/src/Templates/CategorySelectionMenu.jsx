@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { Box, Button, Menu, MenuItem, Typography } from "@mui/material";
+import {Box, Button, FormControlLabel, Menu, MenuItem, RadioGroup, Typography,Radio} from "@mui/material";
 
 const CategorySelectionMenu = ({ parentCategories, subCategories,  newTransaction, handleChange }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [subcategoryAnchorEl, setSubcategoryAnchorEl] = useState(null);
     const [error, setError] = useState(false);
-    const [recurringAnchor, setRecurringAnchor] = useState(null);
 
     const handleMenuOpen = (event) => {
         console.log("Menu Opened");
@@ -20,12 +19,7 @@ const CategorySelectionMenu = ({ parentCategories, subCategories,  newTransactio
     };
     const handleSubcategoryClose = () => setSubcategoryAnchorEl(null);
 
-    const handleRecurringOpen = (event) => {
-        console.log("Recurring Menu Opened");
-        setRecurringAnchor(event.currentTarget);
-    }
-
-    const handleRecurringClose = () => setRecurringAnchor(null);
+   ;
 
     useEffect(() => {
         if (subCategories.length === 0 && newTransaction.ParentCategoryName) {
@@ -111,71 +105,6 @@ const CategorySelectionMenu = ({ parentCategories, subCategories,  newTransactio
                             ))}
                     </Menu>
                 </Box>
-                <Box display="flex" alignItems="center" gap={2}>
-                    <Typography color="black" >Do u want this to be a recurring Transaction?</Typography>
-                    <Button
-                        variant="outlined"
-                        onClick={handleSubcategoryOpen}
-                        disabled={subCategories.length === 0}
-                    >
-                        {newTransaction.SubCategoryName || "Select Subcategory"}
-                    </Button>
-
-                    <Menu
-                        anchorEl={subcategoryAnchorEl}
-                        open={Boolean(subcategoryAnchorEl)}
-                        onClose={handleSubcategoryClose}
-                        sx={{
-                            maxHeight: "300px", // Limit the height of the subcategory menu
-                            overflowY: "auto", // Make it scrollable if content exceeds maxHeight
-                            zIndex: 1301, // Ensure it appears on top
-                        }}
-                    >
-                        {subCategories.length > 0 &&
-                            subCategories.map((subcategory) => (
-                                <MenuItem
-                                    key={subcategory.id}
-                                    onClick={() => {
-                                        handleChange("SubCategoryName", subcategory.SubCategoryName);
-                                        handleSubcategoryClose();
-                                    }}
-                                >
-                                    {subcategory.SubCategoryName}
-                                </MenuItem>
-                            ))}
-                    </Menu>
-                </Box>
-            <Box display="flex" alignItems="center" gap={2}>
-                <Typography color="black" >Do u want this to be a recurring Transaction?</Typography>
-                <Button
-                    variant="outlined"
-                    onClick={handleSubcategoryOpen}
-                    disabled={subCategories.length === 0}
-                >
-                    {newTransaction.SubCategoryName || "Select Subcategory"}
-                </Button>
-
-                <Menu
-                    anchorEl={recurringAnchor}
-                    open={Boolean(recurringAnchor)}
-                    onClose={handleRecurringClose}
-                    // sx={{
-                    //     maxHeight: "300px", // Limit the height of the subcategory menu
-                    //     overflowY: "auto", // Make it scrollable if content exceeds maxHeight
-                    //     zIndex: 1301, // Ensure it appears on top
-                    // }}
-                >
-                            {/*<MenuItem*/}
-                            {/*    key={subcategory.id}*/}
-                            {/*    onClick={() => {*/}
-                            {/*        handleChange("SubCategoryName", subcategory.SubCategoryName);*/}
-                            {/*        handleSubcategoryClose();*/}
-                            {/*    }}*/}
-                            {/*>*/}
-                            {/*    {subcategory.SubCategoryName}*/}
-                            {/*</MenuItem>*/}
-                    </Menu>
-                </Box>
             </Box>
         </>
     );
@@ -199,8 +128,6 @@ CategorySelectionMenu.propTypes = {
     newTransaction: PropTypes.shape({
         ParentCategoryName: PropTypes.string,
         SubCategoryName: PropTypes.string,
-        isRecurring: PropTypes.bool.isRequired,
-        frequency: PropTypes.string,
     }).isRequired,
     handleChange: PropTypes.func.isRequired,
 };

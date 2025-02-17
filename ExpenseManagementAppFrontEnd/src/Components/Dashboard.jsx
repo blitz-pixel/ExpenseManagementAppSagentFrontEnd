@@ -22,7 +22,9 @@ function Dashboard() {
     const {data: transactions, isLoading,isError} = useQuery({
         queryKey: ["transactions", accountId],
         queryFn: async () => {
+
             const res = await api.get(`/transactions/all?accountId=${accountId}`);
+            console.log(res)
             return res.data || [];
         },
     })
@@ -153,13 +155,14 @@ function Dashboard() {
                 >
                     <Box
                         sx={{
-                            width: "100%",
-                            maxWidth: "500px",
+                            position: "relative",
+                            width: "800px",
                             background: "linear-gradient(to bottom, #d4a017, #b8860b)",
                             borderRadius: "15px",
                             border: "3px solid #a37412",
                             boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.3)",
                             padding: 3,
+                            marginLeft: "150px"
                         }}
                     >{isLoading || isError ? (
                         <CircularProgress sx={{
@@ -184,7 +187,7 @@ function Dashboard() {
                             >
                                 Recent Transactions
                             </Typography>
-                            <TableContainer component={Paper} sx={{ background: "transparent", boxShadow: "none" }}>
+                            <TableContainer component={Paper} sx={{height: "200px", width: "500px", background: "transparent", boxShadow: "none"}}>
                                 <Table>
                                     <TableHead>
                                         <TableRow>
