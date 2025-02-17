@@ -21,6 +21,8 @@ import { Menu as MenuIcon, Moon, Sun } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import {logout} from "./axiosInstance.js";
 import PropTypes from "prop-types";
+import newlogo from"../assets/newlogo.png"
+
 
 const token = localStorage.getItem("accountId");
 
@@ -90,11 +92,17 @@ const Navbar = ({sidebarContent}) => {
                         {/* Logo and Title */}
                         <Box sx={{ display: "flex", alignItems: "center", flexGrow: 1 }}>
                             <Box  sx={{ textDecoration: "none", display: "flex", alignItems: "center", color: "inherit", marginLeft: "100px" }}>
+                                {/*<img*/}
+                                {/*    src="https://flowbite.com/docs/images/logo.svg"*/}
+                                {/*    alt="Logo"*/}
+                                {/*    style={{ height: "40px", marginRight: "10px" }}*/}
+                                {/*/>*/}
                                 <img
-                                    src="https://flowbite.com/docs/images/logo.svg"
+                                    src={newlogo}
                                     alt="Logo"
                                     style={{ height: "40px", marginRight: "10px" }}
                                 />
+
                                 <Typography variant="h6" sx={{ fontWeight: "bold", color: "#ffffff" }}>
                                     Gastos Rastreador
                                 </Typography>

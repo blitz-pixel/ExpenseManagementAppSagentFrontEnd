@@ -30,10 +30,7 @@ const features = [
         title: "Audit Logs",
         description: "Maintain a detailed log of expense-related activities for transparency and auditing.",
     },
-    {
-        title: "Real-Time Tracking",
-        description: "Allow employees to track expenses in real-time, providing managers with better financial visibility.",
-    },
+
     {
         title: "User Interface",
         description:
