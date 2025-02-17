@@ -6,24 +6,31 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import CategorySelectionMenu from "./CategorySelectionMenu.jsx";
 import PropTypes from "prop-types";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
-const ExpenseModal = ({
+const TransactionModal = ({
                           name,transaction, removeTransaction, categories,
                           newTransaction, handleChange,
                           handleAddTransaction
                       }) => {
     const [showModal, setShowModal] = useState(false);
+
     let parentCategories = categories.filter(category => category.SubCategoryName === "");
     const subcategories = categories.filter(
         category => category.ParentCategoryName === newTransaction.ParentCategoryName && category.SubCategoryName !== ""
     );
+
+
+
     // console.log(parentCategories[0])
     const onModalClose = () => {
         handleChange("ParentCategoryName", "");
         handleChange("SubCategoryName", "");
         setShowModal(false)
     }
+
+
+
     return (
         <div>
             {/* Header Section with Proper Alignment */}
@@ -31,35 +38,68 @@ const ExpenseModal = ({
                 <Typography variant="h4" gutterBottom>{name}</Typography>
                 <Button variant="contained" color="primary" onClick={() => setShowModal(true)}>Add {name}</Button>
             </div>
-            {/* Expense Table */}
+            {/* Transaction Table */}
             {transaction.length > 0 && (
-                <TableContainer component={Paper} sx={{ mt: 2 }}>
-                    <Table>
+                <TableContainer
+                    component={Paper}
+                    sx={{
+                        background: "rgba(255, 255, 255, 0.9)", // Slight transparency for depth
+                        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)", // Embossed effect
+                        borderRadius: "10px", // Smooth corners
+                        overflow: "hidden",
+                    }}
+                >
+                    <Table
+                        sx={{
+                            borderCollapse: "separate",
+                            borderSpacing: "0px",
+                        }}
+                    >
                         <TableHead>
-                            <TableRow>
-                                <TableCell>S.No</TableCell>
-                                <TableCell>Category</TableCell>
-                                <TableCell>Sub-Category</TableCell>
-                                <TableCell>Amount</TableCell>
-                                <TableCell>Date Added</TableCell>
-                                <TableCell>Actions</TableCell>
+                            <TableRow sx={{ background: "#333" }}>
+                                <TableCell sx={{ fontWeight: "bold", color: "#fff", padding: "12px", borderBottom: "none" }}>S.No</TableCell>
+                                <TableCell sx={{ fontWeight: "bold", color: "#fff", padding: "12px", borderBottom: "none" }}>Category</TableCell>
+                                <TableCell sx={{ fontWeight: "bold", color: "#fff", padding: "12px", borderBottom: "none" }}>Sub-Category</TableCell>
+                                <TableCell sx={{ fontWeight: "bold", color: "#fff", padding: "12px", borderBottom: "none" }}>Amount</TableCell>
+                                <TableCell sx={{ fontWeight: "bold", color: "#fff", padding: "12px", borderBottom: "none" }}>Description</TableCell>
+                                <TableCell sx={{ fontWeight: "bold", color: "#fff", padding: "12px", borderBottom: "none" }}>Date Added</TableCell>
+                                <TableCell sx={{ fontWeight: "bold", color: "#fff", padding: "12px", borderBottom: "none" }}>Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {transaction.map((transaction, index) => (
-                                <TableRow key={transaction.uuid}>
-                                    <TableCell>{index + 1}</TableCell>
-                                    <TableCell>{transaction.ParentCategoryName}</TableCell>
-                                    <TableCell>{transaction.SubCategoryName || "-"}</TableCell>
-                                    <TableCell>{transaction.amount}</TableCell>
-                                    {/*<TableCell>{new Date(transaction.date).toLocaleDateString() || "-"}</TableCell>*/}
-                                    <TableCell>
+                                <TableRow
+                                    key={transaction.uuid}
+                                    sx={{
+                                        backgroundColor: index % 2 === 0 ? "#534904" : "#b8860b",
+                                        "&:hover": {
+                                            backgroundColor: "#a67c00",
+                                            boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.3)",
+                                            transform: "scale(1.02)",
+                                        },
+                                        transition: "background 0.3s, box-shadow 0.3s, transform 0.3s",
+                                    }}
+                                >
+
+                                <TableCell sx={{ color: "#fff", padding: "12px", border: "none" }}>{index + 1}</TableCell>
+                                    <TableCell sx={{ color: "#fff", padding: "12px", border: "none" }}>{transaction.ParentCategoryName || "-"}</TableCell>
+                                    <TableCell sx={{ color: "#fff", padding: "12px", border: "none" }}>{transaction.SubCategoryName || "-"}</TableCell>
+                                    <TableCell sx={{ color: "#fff", padding: "12px", border: "none" }}>{transaction.amount}</TableCell>
+                                    <TableCell sx={{ color: "#fff", padding: "12px", border: "none" }}>{transaction.description || "-"}</TableCell>
+                                    <TableCell sx={{ color: "#fff", padding: "12px", border: "none" }}>
                                         {new Date(transaction.date).toLocaleDateString() || "-"}
+                                    </TableCell>
+                                    <TableCell sx={{ color: "#fff", padding: "12px", border: "none" }}>
                                         <IconButton
                                             size="small"
-                                            sx={{ padding: 0, right: "-7px" }}
+                                            sx={{
+                                                padding: 0,
+                                                right: "-7px",
+                                                color: "#fff",
+                                                "&:hover": { color: "#ff4d4d" },
+                                            }}
                                             edge="end"
-                                            onClick={() =>  removeTransaction(transaction.uuid)}
+                                            onClick={() => removeTransaction(transaction.uuid)}
                                         >
                                             <DeleteIcon />
                                         </IconButton>
@@ -84,18 +124,19 @@ const ExpenseModal = ({
                     borderRadius: "8px",
                     p: 3,
                     position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    boxShadow: 24
+                    top: 0,             // Ensure the modal appears at the top of the page
+                    left: "50%",        // Center the modal horizontally
+                    transform: "translateX(-50%)", // Center the modal horizontally
+                    boxShadow: 24,
+                    zIndex: 1300,       // Ensure the modal is above all other content
                 }}>
-                    <Typography variant="h6" gutterBottom>Add {name}</Typography>
+                    <Typography variant="h6" gutterBottom color="black">Add {name}</Typography>
                     <Divider sx={{ mb: 2 }} />
 
                     <Box sx={{ mb: 2 }}>
                         <CategorySelectionMenu
                             parentCategories={parentCategories}
-                            subCategories={subcategories}
+                            subCategories={subcategories || []}
                             newExpense={newTransaction}
                             handleChange={handleChange}
                             // onModalClose={onModalClose}
@@ -109,6 +150,21 @@ const ExpenseModal = ({
                         type="number"
                         value={newTransaction.amount}
                         onChange={(e) => handleChange("amount", e.target.value)}
+                        sx={{ mb: 2 }}
+                    />
+
+                    <TextField
+                        label="Description"
+                        variant="outlined"
+                        fullWidth
+                        type="text"
+                        inputProps={
+                            {
+                                maxLength: 20
+                            }
+                        }
+                        value={newTransaction.Description}
+                        onChange={(e) => handleChange("Description", e.target.value)}
                         sx={{ mb: 2 }}
                     />
 
@@ -133,7 +189,7 @@ const ExpenseModal = ({
                                 onModalClose();
                             }}
 
-                            disabled={!newTransaction.ParentCategoryName || !newTransaction.amount}
+                            disabled={!newTransaction.ParentCategoryName || !newTransaction.amount }
 
                             sx={{ mr: 1 }}
                         >
@@ -153,7 +209,7 @@ const ExpenseModal = ({
     );
 };
 
-ExpenseModal.propTypes = {
+TransactionModal.propTypes = {
     transaction: PropTypes.arrayOf(
         PropTypes.shape({
             uuid: PropTypes.string.isRequired,
@@ -176,10 +232,11 @@ ExpenseModal.propTypes = {
         SubCategoryName: PropTypes.string,
         amount: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
         date: PropTypes.string.isRequired,
+        Description: PropTypes.string.isRequired,
     }).isRequired,
     handleChange: PropTypes.func.isRequired,
     handleAddTransaction: PropTypes.func.isRequired,
     name: PropTypes.string.isRequired
 };
 
-export default ExpenseModal;
+export default TransactionModal;

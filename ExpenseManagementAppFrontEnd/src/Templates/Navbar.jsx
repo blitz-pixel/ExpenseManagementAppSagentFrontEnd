@@ -20,10 +20,11 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { Menu as MenuIcon, Moon, Sun } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import {logout} from "./axiosInstance.js";
+import PropTypes from "prop-types";
 
 const token = localStorage.getItem("accountId");
 
-const Navbar = () => {
+const Navbar = ({sidebarContent}) => {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [darkMode, setDarkMode] = useState(localStorage.getItem("theme") === "dark");
     const [anchorEl, setAnchorEl] = useState(null);
@@ -119,7 +120,7 @@ const Navbar = () => {
                                         transformOrigin={{ vertical: "top", horizontal: "right" }}
                                     >
                                         <MenuItem onClick={ () => {navigate("/Account"); handleMenuClose()}}>Profile</MenuItem>
-                                        <MenuItem onClick={() => {navigate("/Settings"); handleMenuClose()}}>Settings</MenuItem>
+                                        <MenuItem onClick={() => {navigate("/Settings"); handleMenuClose()}}>Change Details</MenuItem>
                                         <MenuItem onClick={logout}>Logout</MenuItem>
                                     </Menu>
                                 </>
@@ -154,48 +155,17 @@ const Navbar = () => {
                     }
                 }}
             >
-                <Box sx={{ width: 250, p: 2 }}>
-                    <List>
-                        <ListItem button onClick={() => navigate("/Dashboard")}>
-                            <ListItemText primary="Dashboard" />
-                        </ListItem>
-                        <ListItem button onClick={() => navigate("/Expense")}>
-                            <ListItemText primary="Expense" />
-                        </ListItem>
-                        <ListItem button onClick={() => navigate("/Revenue")}>
-                            <ListItemText primary="Revenue" />
-                        </ListItem>
-                        <ListItem button onClick={() => navigate("/Report")}>
-                            <ListItemText primary="Report" />
-                        </ListItem>
-                    </List>
-
-                    <Divider sx={{ my: 2, borderColor: "rgba(255, 255, 255, 0.2)" }} />
-
-                    <Typography variant="h6" gutterBottom>
-                        Settings
-                    </Typography>
-                    <List>
-                        <ListItem>
-                            <FormControlLabel
-                                control={<Switch />}
-                                label="Dark Mode"
-                            />
-                        </ListItem>
-                        <ListItem>
-                            <FormControlLabel
-                                control={<Switch />}
-                                label="Notifications"
-                            />
-                        </ListItem>
-                    </List>
-                </Box>
+                {sidebarContent}
             </Drawer>
 
 
 
         </>
     );
+};
+
+Navbar.propTypes = {
+    sidebarContent: PropTypes.node,
 };
 
 export default Navbar;

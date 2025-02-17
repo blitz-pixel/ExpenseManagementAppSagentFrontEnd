@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, CircularProgress } from "@mui/material";
+import {Alert, Box, CircularProgress, Snackbar} from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
 import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query";
 import { api } from "../Templates/axiosInstance.js";
@@ -11,7 +11,7 @@ const id = localStorage.getItem("accountId");
 
 const Revenue = () => {
     const queryClient = useQueryClient();
-
+    const [snackbar, setSnackbar] = useState({ open: true, message: "", severity: "error",code : 0 });
     const queries = useQueries({
         queries: [
             {
@@ -48,6 +48,7 @@ const Revenue = () => {
         // accountId: id,
         ParentCategoryName: "",
         SubCategoryName: "",
+        Description: "",
         amount: "",
         date: "",
     });
@@ -67,7 +68,10 @@ const Revenue = () => {
             });
             queryClient.invalidateQueries(["revenues", id]);
         },
-        onError: (error) => console.error("Error adding new Revenue:", error),
+        onError: (error) => {
+            console.error("Error adding new Revenue:", error)
+            setSnackbar({ open: true, message: error.response.data, severity: "error",code : 0 });
+        },
     });
 
     const removeRevenue = useMutation({
@@ -75,7 +79,8 @@ const Revenue = () => {
             await api.delete(`/revenue/delete?uuid=${uuid}`)
         },
         onSuccess: () => queryClient.invalidateQueries(["revenues", id]),
-        onError: (error) => console.error("Error deleting revenue:", error),
+        onError: (error) => {console.error("Error deleting revenue:", error)
+            setSnackbar({ open: true, message: error.response.data, severity: "error",code : 0 });},
     });
 
     const handleChange = (field, value) => {
@@ -83,14 +88,30 @@ const Revenue = () => {
     };
 
     const isLoading = isLoadingRevenues || isLoadingCategories;
-    const error = RevenueError || categoriesError || handleAddRevenue.error || removeRevenue.error;
+    const error = RevenueError || categoriesError;
+    const isFetching = isLoading || error;
 
-    if (isLoading)
+    if (isFetching) {
         return (
             <Box>
-                <CircularProgress />
+                <Snackbar
+                    open={snackbar.open}
+                    autoHideDuration={6000}
+                    anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                    onClose={() => setSnackbar({ ...snackbar, open: false })}
+                >
+                    <Alert
+                        onClose={() => setSnackbar({ ...snackbar, open: false })}
+                        severity={error ? "error" : "info"}
+                    >
+                        {error ? error?.message : "Fetching Revenues..."}
+                    </Alert>
+                </Snackbar>
+                {isLoading && <CircularProgress />}
             </Box>
         );
+    }
+
 
     const addRevenueHandler = () => {
         handleAddRevenue.mutate(newRevenue);
@@ -101,7 +122,17 @@ const Revenue = () => {
 
     return (
         <div style={{ padding: "20px", maxWidth: "900px", margin: "auto" }}>
-            {error && <div style={{ color: "red" }}>Error: {error?.message}</div>}
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={6000}
+                anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                onClose={() => setSnackbar({ ...snackbar, open: false })}
+            >
+                <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity}>
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
+            {/*{error && <div style={{ color: "red" }}>Error: {error?.message}</div>}*/}
             <TransactionFormModal
                 name="Revenue"
                 transaction={revenues || []}
@@ -110,6 +141,8 @@ const Revenue = () => {
                 newTransaction={newRevenue}
                 handleChange={handleChange}
                 handleAddTransaction={addRevenueHandler}
+                snackBar={snackbar}
+                setSnackBar={setSnackbar}
             />
         </div>
     );
