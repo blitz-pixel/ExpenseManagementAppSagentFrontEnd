@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import {Alert, Box, CircularProgress, Snackbar} from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
 import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query";
@@ -11,7 +11,7 @@ const id = localStorage.getItem("accountId");
 
 const Revenue = () => {
     const queryClient = useQueryClient();
-    const [snackbar, setSnackbar] = useState({ open: true, message: "", severity: "error",code : 0 });
+    const [snackbar, setSnackbar] = useState({ open: true, message: "", severity: "",code : 0 });
     const queries = useQueries({
         queries: [
             {
@@ -49,6 +49,8 @@ const Revenue = () => {
         ParentCategoryName: "",
         SubCategoryName: "",
         Description: "",
+        isRecurring: false,
+        frequency: "NONE",
         amount: "",
         date: "",
     });
@@ -63,6 +65,9 @@ const Revenue = () => {
                 // accountId: id,
                 ParentCategoryName: "",
                 SubCategoryName: "",
+                Description: "",
+                isRecurring: false,
+                frequency: "NONE",
                 amount: "",
                 date: "",
             });
@@ -78,7 +83,11 @@ const Revenue = () => {
         mutationFn: async (uuid) => {
             await api.delete(`/revenue/delete?uuid=${uuid}`)
         },
-        onSuccess: () => queryClient.invalidateQueries(["revenues", id]),
+        onSuccess: () => {
+            setSnackbar({ open: true, message: "Revenue deleted successfully", severity: "success" });
+            setNewRevenue({ParentCategoryName: "",SubCategoryName: "",amount: "",date: ""});
+            queryClient.invalidateQueries(["revenues", id]);
+            },
         onError: (error) => {console.error("Error deleting revenue:", error)
             setSnackbar({ open: true, message: error.response.data, severity: "error",code : 0 });},
     });
@@ -91,6 +100,12 @@ const Revenue = () => {
     const error = RevenueError || categoriesError;
     const isFetching = isLoading || error;
 
+    useEffect(() => {
+        if (categories && categories.length === 0) {
+            setSnackbar({ open: true, message: "Please add a Income category first", severity: "error",code : 110 });
+        }
+    }, [categories]);
+
     if (isFetching) {
         return (
             <Box>
@@ -101,13 +116,15 @@ const Revenue = () => {
                     onClose={() => setSnackbar({ ...snackbar, open: false })}
                 >
                     <Alert
-                        onClose={() => setSnackbar({ ...snackbar, open: false })}
+                        onClose={() => {setSnackbar(
+                            { ...snackbar, open: false });
+                    }}
                         severity={error ? "error" : "info"}
                     >
                         {error ? error?.message : "Fetching Revenues..."}
                     </Alert>
                 </Snackbar>
-                {isLoading && <CircularProgress />}
+                {isLoading && <CircularProgress sx={{color: "#7c5f13"}}/>}
             </Box>
         );
     }
@@ -123,7 +140,7 @@ const Revenue = () => {
     return (
         <div style={{ padding: "20px", maxWidth: "900px", margin: "auto" }}>
             <Snackbar
-                open={snackbar.open}
+                open={snackbar.open && snackbar.code !== 0}
                 autoHideDuration={6000}
                 anchorOrigin={{ vertical: "top", horizontal: "right" }}
                 onClose={() => setSnackbar({ ...snackbar, open: false })}

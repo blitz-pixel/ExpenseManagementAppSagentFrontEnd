@@ -46,9 +46,9 @@ const Recurring = () => {
 
             if (shouldInvalidate) {
                 console.log("Invalidating transactions query...");
-                queryClient.invalidateQueries(["revenues"]);
-                queryClient.invalidateQueries(["expenses"])
-                queryClient.invalidateQuries(["recurring"])
+                queryClient.invalidateQueries(["revenues",id]);
+                queryClient.invalidateQueries(["expenses",id])
+                queryClient.invalidateQuries(["recurring",id])
             }
         }
     }, [RecurringTransaction, queryClient]);

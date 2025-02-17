@@ -50,12 +50,8 @@ const reducer = (state, action) => {
     switch (action.type) {
         case "TOGGLE_MODAL":
             return { ...state, showModal: !state.showModal };
-        // case "SET_REFRESH":
-        //     return { ...state, refresh: !state.refresh };
         case "SET_ANCHOR":
             return { ...state, anchorEl: action.payload };
-        // case "FETCH_CATEGORIES":
-        //     return { ...state, categories: action.payload };
         case "ADD_CATEGORY":
             return { ...state,  newCategory: { ...initialState.newCategory} };
         case "SET_SNACKBAR":
@@ -79,6 +75,7 @@ const Category = () => {
         queryFn: async () => {
             try {
             const response = await api.get(`/categories?Id=${accountId}`);
+            console.log(response)
             return (Array.isArray(response.data) ? response.data : []).map(category => ({
                 id: uuidv4(),
                 ...category
@@ -95,6 +92,7 @@ const Category = () => {
             return response.data;
         },
         onSuccess: () => {
+            dispatch({type: "SET_SNACKBAR", payload: {open: true, message: "Category added successfully", severity: "success", code: 110}})
             queryClient.invalidateQueries(["categories", accountId]);
             dispatch({ type: "ADD_CATEGORY"});
             dispatch({ type: "TOGGLE_MODAL" });
@@ -118,6 +116,7 @@ const Category = () => {
             return response.data
         },
         onSuccess: () =>{
+            dispatch({type: "SET_SNACKBAR", payload: {open: true, message: "Category deleted successfully", severity: "success", code: 108}})
             queryClient.invalidateQueries([categories,accountId])
         },
         onError: (error) => {
@@ -141,48 +140,53 @@ const Category = () => {
     const handleSnackbarClose = () => {
         dispatch({ type: "SET_SNACKBAR", payload: {...initialState, open: false}});
     }
-    const isLoading = isFetchingCategory || addCategory.isPending;
-    category.error = category.error || "Error fetching Categories";
+    const isLoading = isFetchingCategory || addCategory.isPending || removeCategory.isPending;
     
 
-    if (isLoading)
+    if (isLoading || isCategoryError)
         return (
             <Box>
-                    <Snackbar
-                        open = {category.snackbar.open}
-                        autoHideDuration={6000}
-                        onClose={handleSnackbarClose}
+                <Snackbar
+                    open={category.snackbar.open}
+                    autoHideDuration={6000}
+                    anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                    onClose={() => dispatch({ type: "SET_SNACKBAR", payload: { ...initialState.snackbar, open: false } })}
+                >
+                    <Alert
+                        onClose={() => dispatch({ type: "SET_SNACKBAR", payload: { ...initialState.snackbar, open: false } })}
+                        severity={isCategoryError ? "error" : "info"}
                     >
-                        <Alert onClose={handleSnackbarClose} severity={"info"}>
-                            {"fetching Categories..."}
-                        </Alert>
-                    </Snackbar>
-                <CircularProgress />
+                        {isCategoryError ? "Fetching Categories.." : category.snackbar.message}
+                    </Alert>
+                </Snackbar>
+                {isLoading && <CircularProgress sx={{color: "#7c5f13"}} />}
             </Box>
         );
 
 
-    if (isCategoryError){
-        return (
-            <>
-                <Snackbar
-                    open = {category.snackbar.open}
-                    autoHideDuration={6000}
-                    onClose={handleSnackbarClose}
-                >
-                        <Alert onClose={handleSnackbarClose} severity={category.snackbar.severity}>
-                            {category.snackbar.message}
-                        </Alert>
-                </Snackbar>
-            </>
-        )
-    }
+    // if (isCategoryError){
+    //     return (
+    //         <>
+    //             <Snackbar
+    //                 open = {category.snackbar.open}
+    //                 autoHideDuration={6000}
+    //                 anchorOrigin={{ vertical: "top", horizontal: "right" }}
+    //                 onClose={handleSnackbarClose}
+    //             >
+    //                     <Alert onClose={handleSnackbarClose} severity={category.snackbar.severity}>
+    //                         {category.snackbar.message}
+    //                     </Alert>
+    //             </Snackbar>
+    //         </>
+    //     )
+    // }
     return (
         <>
 
             <Snackbar
                 open = {category.snackbar.open}
                 autoHideDuration={6000}
+                anchorOrigin={{ vertical: "top", horizontal: "right" }}
                 onClose={handleSnackbarClose}
             >
                 <Alert onClose={handleSnackbarClose} severity={category.snackbar.severity}>
@@ -207,7 +211,7 @@ const Category = () => {
             </Dialog>
         <Box sx={{ maxWidth: 400, mx: "auto", mt: 4 }}>
             <Button variant="contained" color="primary" onClick={() => dispatch({ type: "TOGGLE_MODAL" })}>Add Category</Button>
-            {categories?.length > 0 && (
+            {categories.length > 0 && (
                 <TableContainer component={Paper} sx={{ mt: 2 ,
                     background: "rgba(255, 255, 255, 0.9)", // Slight transparency for depth
                     boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)", // Embossed effect
@@ -291,7 +295,7 @@ const Category = () => {
                 }}>
 
                     <Typography variant="h6">Add Revenue/Expense</Typography>
-                    <TextField label="Category" fullWidth sx={{ mb: 2 }} value={category.newCategory.ParentCategoryName} onChange={(e) => handleChange("ParentCategoryName", e.target.value)} />
+                    <TextField label="Category"  required fullWidth sx={{ mb: 2 }} value={category.newCategory.ParentCategoryName} onChange={(e) => handleChange("ParentCategoryName", e.target.value)} />
                     <TextField label="Sub-Category" fullWidth sx={{ mb: 2 }} value={category.newCategory.SubCategoryName} onChange={(e) => handleChange("SubCategoryName", e.target.value)} />
 
                     <Button variant="outlined" fullWidth onClick={(e) => dispatch({ type: "SET_ANCHOR", payload: e.currentTarget })}>

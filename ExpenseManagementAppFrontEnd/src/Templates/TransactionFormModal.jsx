@@ -1,5 +1,5 @@
 import {
-    Box, Button, Divider, IconButton, Modal, Paper, Table,
+    Box, Button, Divider, FormControlLabel, IconButton, Menu, MenuItem, Modal, Paper, Radio, RadioGroup, Table,
     TableBody, TableCell, TableContainer, TableHead, TableRow,
     TextField, Typography
 } from "@mui/material";
@@ -14,6 +14,14 @@ const TransactionModal = ({
                           handleAddTransaction
                       }) => {
     const [showModal, setShowModal] = useState(false);
+    const [recurringAnchor, setRecurringAnchor] = useState(null);
+    const [isRecurring, setIsRecurring] = useState(false);
+    const handleRecurringOpen = (event) => {
+        console.log("Recurring Menu Opened");
+        setRecurringAnchor(event.currentTarget);
+    }
+
+    const handleRecurringClose = () => setRecurringAnchor(null)
 
     let parentCategories = categories.filter(category => category.SubCategoryName === "");
     const subcategories = categories.filter(
@@ -137,7 +145,7 @@ const TransactionModal = ({
                         <CategorySelectionMenu
                             parentCategories={parentCategories}
                             subCategories={subcategories || []}
-                            newExpense={newTransaction}
+                            newTransaction={newTransaction}
                             handleChange={handleChange}
                             // onModalClose={onModalClose}
                         />
@@ -178,6 +186,69 @@ const TransactionModal = ({
                         sx={{ mb: 2 }}
                         InputLabelProps={{ shrink: true }}
                     />
+
+                    <Box display="flex" alignItems="center" gap={2}>
+                        {/* Recurring Transaction Selection */}
+                        <Box sx={{ mb: 2 }}>
+                            <Typography variant="h6" sx={{color: "black"}}>Is this transaction recurring?</Typography>
+                            <RadioGroup
+                                value={newTransaction.isRecurring}
+                                onChange={(e) => {
+                                    handleChange("isRecurring", e.target.value === "true");
+                                    if (e.target.value === "true") {
+                                        setIsRecurring(true);
+                                    } else {
+                                       setIsRecurring(false);
+                                       handleChange("frequency", "");
+                                    }
+                                }}
+                            >
+                                <FormControlLabel value="true" sx={{color:"black"}} control={<Radio  disabled={subcategories.length === 0 }/>} label="Yes" />
+                                <FormControlLabel value="false" sx={{color: "black" }} control={<Radio disabled={subcategories.length === 0 }/>} label="No" />
+                            </RadioGroup>
+                        </Box>
+
+                        {/* Recurrence Frequency Menu */}
+                        <Button
+                            variant="contained"
+                            sx={{ mt: 2 }}
+                            onClick={handleRecurringOpen}
+                            disabled={isRecurring}
+                        >
+                            {newTransaction.frequency ? `Frequency: ${newTransaction.frequency}` : "Select Recurrence Frequency"}
+                        </Button>
+
+                        <Menu
+                            anchorEl={recurringAnchor}
+                            open={Boolean(recurringAnchor)}
+                            onClose={handleRecurringClose}
+                        >
+                            <MenuItem
+                                onClick={() => {
+                                    handleChange("frequency", "WEEKLY");
+                                    handleRecurringClose();
+                                }}
+                            >
+                                WEEKLY
+                            </MenuItem>
+                            <MenuItem
+                                onClick={() => {
+                                    handleChange("frequency", "MONTHLY");
+                                    handleRecurringClose();
+                                }}
+                            >
+                                MONTHLY
+                            </MenuItem>
+                            <MenuItem
+                                onClick={() => {
+                                    handleChange("frequency", "YEARLY");
+                                    handleRecurringClose();
+                                }}
+                            >
+                                YEARLY
+                            </MenuItem>
+                        </Menu>
+                    </Box>
 
                     {/* Buttons */}
                     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
@@ -233,6 +304,8 @@ TransactionModal.propTypes = {
         amount: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
         date: PropTypes.string.isRequired,
         Description: PropTypes.string.isRequired,
+        isRecurring: PropTypes.bool.isRequired,
+        frequency: PropTypes.string,
     }).isRequired,
     handleChange: PropTypes.func.isRequired,
     handleAddTransaction: PropTypes.func.isRequired,

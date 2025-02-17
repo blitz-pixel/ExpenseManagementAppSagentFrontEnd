@@ -89,7 +89,7 @@ const Navbar = ({sidebarContent}) => {
 
                         {/* Logo and Title */}
                         <Box sx={{ display: "flex", alignItems: "center", flexGrow: 1 }}>
-                            <Link to="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", color: "inherit", marginLeft: "100px" }}>
+                            <Box  sx={{ textDecoration: "none", display: "flex", alignItems: "center", color: "inherit", marginLeft: "100px" }}>
                                 <img
                                     src="https://flowbite.com/docs/images/logo.svg"
                                     alt="Logo"
@@ -98,7 +98,7 @@ const Navbar = ({sidebarContent}) => {
                                 <Typography variant="h6" sx={{ fontWeight: "bold", color: "#ffffff" }}>
                                     Gastos Rastreador
                                 </Typography>
-                            </Link>
+                            </Box>
                         </Box>
 
                         {/* Navigation Buttons */}
@@ -125,7 +125,7 @@ const Navbar = ({sidebarContent}) => {
                                     </Menu>
                                 </>
                             ) : (
-                                <Button color="inherit" sx={{ color: "#ffffff" }} onClick={() => navigate("/register")}>
+                                <Button color="inherit" sx={{ color: "#ffffff" }} onClick={() => navigate("/Registration")}>
                                     Register
                                 </Button>
                             )}
