@@ -135,7 +135,7 @@ const Category = () => {
         );
     return (
         <Box sx={{ maxWidth: 400, mx: "auto", mt: 4 }}>
-            {category.error && <Typography color="error">{category.error}</Typography>}
+            {/*{category.error && <Typography color="error">{category.error}</Typography>}*/}
             <Button variant="contained" color="primary" onClick={() => dispatch({ type: "TOGGLE_MODAL" })}>Add Category</Button>
 
             {categories?.length > 0 && (
