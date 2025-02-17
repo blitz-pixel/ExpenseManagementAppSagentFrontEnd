@@ -29,7 +29,7 @@ const App = () => {
 
                         <Route path="/Registration" element={<Registration />} />
                         <Route path="/Login" element={<Login />} />
-                        <Route path="/Report" element={<Report />} />
+
 
                         <Route path="/" element={<Layout />}>
                             <Route index element={<Home />} />
@@ -42,6 +42,7 @@ const App = () => {
                                 <Route path="/Category" element={<Categories />} />
                                 <Route path="/Settings" element={<Settings />}/>
                                 <Route path="/Recurring" element={<Recurring/>} />
+                                <Route path="/Report" element={<Report />} />
 
                             </Route>
                         </Route>

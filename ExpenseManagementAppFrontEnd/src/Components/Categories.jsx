@@ -287,11 +287,11 @@ const Category = () => {
                     borderRadius: "8px",
                     p: 3,
                     position: "absolute",
-                    top: "50%",             // Ensure the modal appears at the top of the page
-                    left: "50%",        // Center the modal horizontally
-                    transform: "translate(-50%, -50%)", // Center the modal horizontally
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
                     boxShadow: 24,
-                    zIndex: 1300,       // Ensure the modal is above all other content
+                    zIndex: 1300,
                 }}>
 
                     <Typography variant="h6">Add Revenue/Expense</Typography>

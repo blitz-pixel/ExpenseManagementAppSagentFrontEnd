@@ -30,7 +30,9 @@ const Expense = () => {
                 queryFn: async () => {
                     console.log(localStorage.getItem("accountId"))
                     const res = await api.get(`/expense?accountId=${id}`);
+                    console.log(res.data)
                     return res.data || [];
+
 
                 },
                 cacheTime: 10 * 60 * 1000,
@@ -112,7 +114,7 @@ const Expense = () => {
     };
 
 
-    const isLoading = isLoadingExpenses || isLoadingCategories;
+    const isLoading = isLoadingExpenses || isLoadingCategories || handleAddExpense.isPending || removeExpense.isPending;
     const error = expensesError || categoriesError;
     const isFetching = isLoading || error;
 

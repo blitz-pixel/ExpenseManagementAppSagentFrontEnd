@@ -8,7 +8,7 @@ import {
     InputAdornment,
     Button,
     Snackbar,
-    Alert,
+    Alert, CircularProgress,
 } from "@mui/material";
 import { Visibility, VisibilityOff, Email, Lock } from "@mui/icons-material";
 import "../styles/Login.css";
@@ -53,7 +53,7 @@ const Login = () => {
     const handleSubmitQuery = useMutation({
         mutationFn: async (credentialsToPass) => {
             console.log(credentialsToPass);
-            const response = await api.post("/Login", credentialsToPass);
+            const response = await api.post("/user/login", credentialsToPass);
             return response;
         },
         onSuccess: (response) => {
@@ -134,6 +134,12 @@ const Login = () => {
             // }
         }
         return true
+    }
+
+    if (handleSubmitQuery.isPending){
+        return (
+            <CircularProgress  sx={{color: "#7c5f13"}}/>
+        )
     }
 
     return (

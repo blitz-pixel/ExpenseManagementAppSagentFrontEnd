@@ -72,7 +72,7 @@ const Recurring = () => {
                         {isError ? error?.message : "Fetching Expenses..."}
                     </Alert>
                 </Snackbar>
-                {isLoading && <CircularProgress />}
+                {isLoading && <CircularProgress  sx={{color: "#7c5f13"}}/>}
             </Box>
         );
     }
@@ -142,12 +142,12 @@ const Recurring = () => {
                                     }}
                                 >
                                     <TableCell sx={{ color: "#fff", padding: "12px", border: "none" }}>{index + 1}</TableCell>
-                                    <TableCell sx={{ color: "#fff", padding: "12px", border: "none" }}>{transaction.description || "-"}</TableCell>
+                                    <TableCell sx={{ color: "#fff", padding: "12px", border: "none" }}>{transaction.Description || "-"}</TableCell>
                                     <TableCell sx={{ color: "#fff", padding: "12px", border: "none" }}>
-                                        {transaction.subCategoryName || transaction.parentCategoryName || "-"}
+                                        {transaction.SubCategoryName || transaction.ParentCategoryName || "-"}
                                     </TableCell>
                                     <TableCell sx={{ color: "#fff", padding: "12px", border: "none" }}>
-                                        {transaction.subCategoryName ? transaction.parentCategoryName : "-"}
+                                        {transaction.SubCategoryName ? transaction.ParentCategoryName : "-"}
                                     </TableCell>
                                     <TableCell sx={{ color: "#fff", padding: "12px", border: "none" }}>{transaction.type || "-"}</TableCell>
                                     <TableCell sx={{ color: "#fff", padding: "12px", border: "none" }}>{transaction.amount || "-"}</TableCell>

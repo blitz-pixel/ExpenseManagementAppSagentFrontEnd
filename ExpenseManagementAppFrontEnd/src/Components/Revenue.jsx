@@ -96,7 +96,7 @@ const Revenue = () => {
         setNewRevenue({ ...newRevenue, [field]: value });
     };
 
-    const isLoading = isLoadingRevenues || isLoadingCategories;
+    const isLoading = isLoadingRevenues || isLoadingCategories || handleAddRevenue.isPending || removeRevenue.isPending;
     const error = RevenueError || categoriesError;
     const isFetching = isLoading || error;
 

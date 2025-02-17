@@ -187,6 +187,7 @@ function Dashboard() {
                             >
                                 Recent Transactions
                             </Typography>
+                            {transactions.length > 0 ?  (
                             <TableContainer component={Paper} sx={{height: "200px", width: "500px", background: "transparent", boxShadow: "none"}}>
                                 <Table>
                                     <TableHead>
@@ -217,7 +218,16 @@ function Dashboard() {
                                         ))}
                                     </TableBody>
                                 </Table>
-                            </TableContainer>
+                            </TableContainer> ) : (
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        color: "#000",
+                                        textAlign: "center",
+                                        padding: 2,
+                                    }}> No Recent Transactions Found
+                        </Typography>
+                                )}
                         </>
                     )}
                     </Box>

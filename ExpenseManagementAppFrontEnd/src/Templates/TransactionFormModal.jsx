@@ -9,10 +9,10 @@ import PropTypes from "prop-types";
 import {useEffect, useState} from "react";
 
 const TransactionModal = ({
-                          name,transaction, removeTransaction, categories,
-                          newTransaction, handleChange,
-                          handleAddTransaction
-                      }) => {
+                              name,transaction, removeTransaction, categories,
+                              newTransaction, handleChange,
+                              handleAddTransaction
+                          }) => {
     const [showModal, setShowModal] = useState(false);
     const [recurringAnchor, setRecurringAnchor] = useState(null);
     const [isRecurring, setIsRecurring] = useState(false);
@@ -89,7 +89,7 @@ const TransactionModal = ({
                                     }}
                                 >
 
-                                <TableCell sx={{ color: "#fff", padding: "12px", border: "none" }}>{index + 1}</TableCell>
+                                    <TableCell sx={{ color: "#fff", padding: "12px", border: "none" }}>{index + 1}</TableCell>
                                     <TableCell sx={{ color: "#fff", padding: "12px", border: "none" }}>{transaction.ParentCategoryName || "-"}</TableCell>
                                     <TableCell sx={{ color: "#fff", padding: "12px", border: "none" }}>{transaction.SubCategoryName || "-"}</TableCell>
                                     <TableCell sx={{ color: "#fff", padding: "12px", border: "none" }}>{transaction.amount}</TableCell>
@@ -98,6 +98,7 @@ const TransactionModal = ({
                                         {new Date(transaction.date).toLocaleDateString() || "-"}
                                     </TableCell>
                                     <TableCell sx={{ color: "#fff", padding: "12px", border: "none" }}>
+                                        { !transaction.isRecurring ? (
                                         <IconButton
                                             size="small"
                                             sx={{
@@ -109,8 +110,8 @@ const TransactionModal = ({
                                             edge="end"
                                             onClick={() => removeTransaction(transaction.uuid)}
                                         >
-                                            <DeleteIcon />
-                                        </IconButton>
+                                           <DeleteIcon />
+                                        </IconButton> ) : "-"}
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -192,28 +193,31 @@ const TransactionModal = ({
                         <Box sx={{ mb: 2 }}>
                             <Typography variant="h6" sx={{color: "black"}}>Is this transaction recurring?</Typography>
                             <RadioGroup
-                                value={newTransaction.isRecurring}
+                                value={String(isRecurring)}
                                 onChange={(e) => {
-                                    handleChange("isRecurring", e.target.value === "true");
-                                    if (e.target.value === "true") {
-                                        setIsRecurring(true);
-                                    } else {
-                                       setIsRecurring(false);
-                                       handleChange("frequency", "");
+                                    const Value = e.target.value === "true";
+                                    handleChange("isRecurring", Value);
+                                    setIsRecurring(Value);
+
+                                    if (!Value) {
+                                        handleChange("frequency", "");
+                                        setIsRecurring(Value)
                                     }
                                 }}
                             >
-                                <FormControlLabel value="true" sx={{color:"black"}} control={<Radio  disabled={subcategories.length === 0 }/>} label="Yes" />
-                                <FormControlLabel value="false" sx={{color: "black" }} control={<Radio disabled={subcategories.length === 0 }/>} label="No" />
+                                <FormControlLabel value="true" sx={{ color: "black" }} control={<Radio />} label="Yes" />
+                                <FormControlLabel value="false" sx={{ color: "black" }} control={<Radio />} label="No" />
                             </RadioGroup>
                         </Box>
+
+
 
                         {/* Recurrence Frequency Menu */}
                         <Button
                             variant="contained"
                             sx={{ mt: 2 }}
                             onClick={handleRecurringOpen}
-                            disabled={isRecurring}
+                            disabled={!isRecurring}
                         >
                             {newTransaction.frequency ? `Frequency: ${newTransaction.frequency}` : "Select Recurrence Frequency"}
                         </Button>

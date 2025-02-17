@@ -3,7 +3,7 @@ import axios from "axios";
 import {Link, Navigate} from "react-router-dom";
 import {api} from "../Templates/axiosInstance.js";
 import { motion } from "framer-motion"
-import {TextField, IconButton, InputAdornment, Button, Snackbar, Alert} from "@mui/material"
+import {TextField, IconButton, InputAdornment, Button, Snackbar, Alert, CircularProgress} from "@mui/material"
 import { Visibility, VisibilityOff, PersonAdd, Email, Lock } from "@mui/icons-material"
 // import PersonIcon from '@mui/icons-material/Person';
 import "../styles/Registration.css"
@@ -85,7 +85,7 @@ const Registration = () => {
     const handleSubmitRequest = useMutation({
         mutationFn: async (formData) => {
             console.log(formData)
-            const response = await api.post("/Registration", formData)
+            const response = await api.post("/user/registration", formData)
             return response.data
         },
         onSuccess: () => {
@@ -94,7 +94,7 @@ const Registration = () => {
         },
         onError: (error) => {
             const errorToDisplay = error.response.data || "Registration failed";
-            dispatch({type: "SET_SNACKBAR",payload: { open: true, message:  errorToDisplay, severity: "success"}})
+            dispatch({type: "SET_SNACKBAR",payload: { open: true, message:  errorToDisplay, severity: "error"}})
         }
     })
     const handleSubmit = (event) => {
@@ -118,6 +118,11 @@ const Registration = () => {
     };
 
 
+    if(handleSubmitRequest.isPending){
+        return (
+            <CircularProgress  sx={{color: "#7c5f13"}}/>
+        )
+    }
     if (register.redirectLogin){
         return <Navigate  to="/Login" />
     }
