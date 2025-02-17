@@ -28,8 +28,10 @@ const Expense = () => {
             {
                 queryKey: ["expenses", id],
                 queryFn: async () => {
+                    console.log(localStorage.getItem("accountId"))
                     const res = await api.get(`/expense?accountId=${id}`);
                     return res.data || [];
+
                 },
                 cacheTime: 10 * 60 * 1000,
             },
@@ -74,6 +76,7 @@ const Expense = () => {
             // return response.data;
         },
         onSuccess: () => {
+            console.log(newExpense)
             setSnackbar({ open: true, message: "Expense added successfully", severity: "success" });
             setNewExpense({
                 // accountId: id,

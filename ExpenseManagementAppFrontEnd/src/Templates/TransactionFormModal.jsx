@@ -203,8 +203,8 @@ const TransactionModal = ({
                                     }
                                 }}
                             >
-                                <FormControlLabel value={true} sx={{color:"black"}} control={<Radio  disabled={subcategories.length === 0 }/>} label="Yes" />
-                                <FormControlLabel value={false} sx={{color: "black" }} control={<Radio disabled={subcategories.length === 0 }/>} label="No" />
+                                <FormControlLabel value="true" sx={{color:"black"}} control={<Radio  disabled={subcategories.length === 0 }/>} label="Yes" />
+                                <FormControlLabel value="false" sx={{color: "black" }} control={<Radio disabled={subcategories.length === 0 }/>} label="No" />
                             </RadioGroup>
                         </Box>
 
@@ -213,7 +213,7 @@ const TransactionModal = ({
                             variant="contained"
                             sx={{ mt: 2 }}
                             onClick={handleRecurringOpen}
-                            disabled={!isRecurring}
+                            disabled={isRecurring}
                         >
                             {newTransaction.frequency ? `Frequency: ${newTransaction.frequency}` : "Select Recurrence Frequency"}
                         </Button>

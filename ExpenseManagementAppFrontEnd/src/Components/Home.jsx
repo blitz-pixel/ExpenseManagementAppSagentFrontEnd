@@ -79,7 +79,7 @@ const Home = () => {
                                 textShadow: "0 4px 8px rgba(255, 255, 255, 0.3)",
                             }}
                         >
-                            Welcome to Expense Tracker
+                            Welcome to Gastos Rastreador
                         </Typography>
                         <Typography variant="h5" color="white" paragraph>
                             Simplify your expense management and gain financial insights
