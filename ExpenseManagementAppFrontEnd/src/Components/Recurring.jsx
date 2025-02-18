@@ -2,19 +2,21 @@ import {useEffect, useState} from "react";
 import {
     Alert,
     Box,
-    CircularProgress,
+    CircularProgress, IconButton,
     Paper,
     Snackbar,
     Table, TableBody, TableCell,
     TableContainer,
     TableHead, TableRow
 } from "@mui/material";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import { api } from "../Templates/axiosInstance.js";
+import {CircleIcon} from "lucide-react";
 
-const id = localStorage.getItem("accountId");
+
 
 const Recurring = () => {
+    const id = localStorage.getItem("accountId");
     const queryClient = useQueryClient();
 
     // Fetch recurring transactions
@@ -27,9 +29,22 @@ const Recurring = () => {
         },
     });
 
+    const ToggleRecurring = useMutation({
+        mutationFn: async (uuid) => {
+            const response = api.put(`/transactions/recurring/toggle?uuid=${uuid}`);
+            return response;
+        },
+        onSuccess: (response) => {
+            setSnackbar({ open: true, message: response.data, severity: "success",code: 107 });
+            queryClient.invalidateQueries(["recurring",id]);
+        },
+        onError: (error) => {
+            setSnackbar({ open: true, message: error.response.data.message || "Some error occurred", severity: "error", code: 107 });
+        }
+    })
 
     const [snackbar, setSnackbar] = useState({
-        open: false,
+        open: true,
         message: "",
         severity: "error",
         code: 0
@@ -55,7 +70,7 @@ const Recurring = () => {
 
     const isFetching = isLoading || isError;
 
-    // Handle loading & error states
+
     if (isFetching) {
         return (
             <Box>
@@ -69,7 +84,7 @@ const Recurring = () => {
                         onClose={() => setSnackbar({ ...snackbar, open: false })}
                         severity={isError ? "error" : "info"}
                     >
-                        {isError ? error?.message : "Fetching Expenses..."}
+                        {isError ? "Error occurred" :"Fetching Expenses..."}
                     </Alert>
                 </Snackbar>
                 {isLoading && <CircularProgress  sx={{color: "#7c5f13"}}/>}
@@ -78,7 +93,17 @@ const Recurring = () => {
     }
 
     return (
+
         <div style={{ padding: "20px", maxWidth: "900px", margin: "auto" }}>
+            <Snackbar
+                open={snackbar.open && snackbar.code !== 0}
+                autoHideDuration={6000}
+                onClose={() => setSnackbar({ ...snackbar, open: false })}
+            >
+                <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity}>
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
             <Box sx={{ padding: "20px", maxWidth: "900px", margin: "auto" }}>
                 <TableContainer
                     component={Paper}
@@ -125,6 +150,9 @@ const Recurring = () => {
                                 <TableCell sx={{ fontWeight: "bold", color: "#fff", padding: "12px", borderBottom: "none" }}>
                                     Next Date
                                 </TableCell>
+                                <TableCell sx={{ fontWeight: "bold", color: "#fff", padding: "12px", borderBottom: "none" }}>
+                                    Toggle
+                                </TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -153,6 +181,23 @@ const Recurring = () => {
                                     <TableCell sx={{ color: "#fff", padding: "12px", border: "none" }}>{transaction.amount || "-"}</TableCell>
                                     <TableCell sx={{ color: "#fff", padding: "12px", border: "none" }}>
                                         {transaction.nextDate ? new Date(transaction.nextDate).toLocaleDateString() : "-"}
+                                    </TableCell>
+                                    <TableCell sx={{ color: "#fff", padding: "12px", border: "none" }}>
+                                        <IconButton
+                                            onClick={() => {
+                                                console.log(transaction.uuid)
+                                                ToggleRecurring.mutate(transaction.uuid)}
+                                        }
+                                            sx={{
+                                                width: 30,
+                                                height: 30,
+                                                bgcolor: transaction.isActive ? "green" : "gray",
+                                                borderRadius: "50%",
+                                                transition: "0.3s",
+                                            }}
+                                        >
+                                            <CircleIcon sx={{ fontSize: 15, color: "white" }} />
+                                        </IconButton>
                                     </TableCell>
                                 </TableRow>
                             ))}

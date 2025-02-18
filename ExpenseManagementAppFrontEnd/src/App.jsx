@@ -17,6 +17,8 @@ import Settings from "./Components/Settings.jsx";
 import ProtectedRoute from "./Templates/Protected.jsx";
 import Report from "./Components/Report.jsx";
 import Recurring from "./Components/Recurring.jsx";
+import ReportTransactions from "./Components/ReportTransactions.jsx";
+import ReportCategories from "./Components/ReportCategories.jsx";
 // import Todos from "./Templates/Test.jsx";
 
 const App = () => {
@@ -26,13 +28,18 @@ const App = () => {
             <QueryClientProvider client={queryClient}>
                 <Router>
                     <Routes>
+                        <Route path="/" element={<Layout />}>
+                            <Route index element={<Home />} />
 
                         <Route path="/Registration" element={<Registration />} />
                         <Route path="/Login" element={<Login />} />
 
+                        <Route path="/Report" element={<Report />}>
+                            <Route path="Transactions" element={<ReportTransactions />} />
+                            <Route path="*" element={<ReportCategories />} />
+                        </Route>
 
-                        <Route path="/" element={<Layout />}>
-                            <Route index element={<Home />} />
+
 
                             <Route element={<ProtectedRoute />}>
                                 <Route path="/Dashboard" element={<Dashboard />} />
@@ -42,7 +49,7 @@ const App = () => {
                                 <Route path="/Category" element={<Categories />} />
                                 <Route path="/Settings" element={<Settings />}/>
                                 <Route path="/Recurring" element={<Recurring/>} />
-                                <Route path="/Report" element={<Report />} />
+
 
                             </Route>
                         </Route>

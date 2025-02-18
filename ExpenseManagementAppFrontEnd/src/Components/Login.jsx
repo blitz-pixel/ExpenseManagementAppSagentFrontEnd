@@ -59,9 +59,21 @@ const Login = () => {
         onSuccess: (response) => {
             const token = response.headers.get("X-Account-ID");
             console.log(token);
+            dispatch({
+                type: "SET_SNACKBAR",
+                payload: {
+                    open: true,
+                    message: "Login successful",
+                    severity: "success",
+                }
+            });
             if (token) {
                 saveAuthToken(token);
-                dispatch({ type: "SET_REDIRECT" });
+                let timeout = setTimeout(() => {
+                    dispatch({ type: "SET_REDIRECT" });
+                }, 3000);
+                return () => clearTimeout(timeout);
+
             } else {
                 console.warn("Token error");
             }
@@ -125,13 +137,7 @@ const Login = () => {
                 payload: {open: true, message: "Enter a password", severity: "error", code: 103}
             })
             return false
-            // } else if (login.credentials.password.length < 8) {
-            //     // dispatch({
-            //     //     type: "SET_SNACKBAR",
-            //     //     payload: {open: true, message: "Password should be minimum 8 characters", severity: "error", code: 103}
-            //     // })
-            //     return true
-            // }
+
         }
         return true
     }

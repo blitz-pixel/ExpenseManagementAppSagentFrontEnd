@@ -8,12 +8,15 @@ import {
     CardActions,
     Dialog,
     DialogTitle,
-    DialogContent, DialogActions
+    DialogContent, DialogActions, Alert, Snackbar, CircularProgress
 } from "@mui/material";
 import {useMutation} from "@tanstack/react-query";
 import {api} from "../Templates/axiosInstance.js";
 
+const token = localStorage.getItem("accountId");
+
 export default function Settings() {
+    console.log(token)
     const [avatar, setAvatar] = useState(null);
     const [formData, setFormData] = useState({
         userName: "",
@@ -24,15 +27,16 @@ export default function Settings() {
     const [dialog,setDialog] = useState(false);
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "error"});
     const updateDetails = useMutation({
-        queryFn: async (formData) => {
-            await api.put("/user/update",formData);
-            // return response;
+        mutationFn: async (formData) => {
+            const response = await api.put(`/user/update?accountId=${token}`,formData);
+            return response;
         },
         onSuccess: (response) => {
-            setSnackbar({ open: true, message: response.data.message, severity: "success" });
+            console.log(response)
+            setSnackbar({ open: true, message: response.data, severity: "success" });
         },
         onError:  (error) => {
-            setSnackbar({ open: true, message: error.response.data.message, severity: "error" });
+            setSnackbar({ open: true, message: error.response.data.message || "Some error occurred", severity: "error" });
         }
     })
     const handleAvatarUpload = (event) => {
@@ -47,6 +51,14 @@ export default function Settings() {
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
+
+    const isLoading = updateDetails.isPending;
+
+    if (isLoading){
+        return (<>
+        <CircularProgress sx={{ color: "#7c5f13" }} />
+        </>)
+    }
 
     return (
         <div style={{ maxWidth: "400px", margin: "auto", padding: "20px" }}>
@@ -63,17 +75,19 @@ export default function Settings() {
             <Dialog
                 open={dialog}>
                 <DialogTitle>Details to change</DialogTitle>
-                <DialogContent>
+                <DialogContent sx={{width: "300px", height: "200px"}}>
                     <p>
-                        Name : {formData.userName !== null ? formData.userName : "Not Provided"}
-                        Email : {formData.email ? formData.email : "Not Provided"}
-                        Password : {formData.password ? "Provided" : "Not Provided"}
+                        Name : {formData.userName !== null ? formData.userName : "Not Provided"}<br></br>
+                        Email : {formData.email ? formData.email : "Not Provided"}<br></br>
+                        Password : {formData.password ? "Provided" : "Not Provided"}<br></br>
                     </p>
                 </DialogContent>
                 <DialogActions>
-                    <Button color="red" onClick={() =>
+                    <Button sx={{color: "red"}} onClick={() =>
                     {
                         setDialog(false);
+                        updateDetails.mutate(formData);
+
 
                     }}>
                         Confirm Changes
@@ -83,14 +97,23 @@ export default function Settings() {
                     </Button>
                 </DialogActions>
             </Dialog>
+            <Snackbar
+                open = {snackbar.open}
+                autoHideDuration = {6000}
+                onClose = {() => setSnackbar({open: false})}
+            >
+                <Alert severity={snackbar.severity} onError={() => setSnackbar({open: false})}>
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
+
             <Card style={{ marginTop: "20px" }}>
                 <CardContent>
-                    <TextField fullWidth label="First Name" name="firstName" value={formData.firstName} onChange={handleChange} margin="normal" />
-                    <TextField fullWidth label="Last Name" name="lastName" value={formData.lastName} onChange={handleChange} margin="normal" />
+                    <TextField fullWidth label="userName" name="username" value={formData.userName} onChange={handleChange} margin="normal" />
                     <TextField fullWidth label="Email" type="email" name="email" value={formData.email} onChange={handleChange} margin="normal" />
                     <TextField fullWidth label="Password" type="password" name="password" value={formData.password} onChange={handleChange} margin="normal" />
                     <CardActions>
-                        <Button variant="contained" color="primary">Save</Button>
+                        <Button variant="contained" color="primary" onClick={() => setDialog(true)}>Save</Button>
                     </CardActions>
                 </CardContent>
             </Card>

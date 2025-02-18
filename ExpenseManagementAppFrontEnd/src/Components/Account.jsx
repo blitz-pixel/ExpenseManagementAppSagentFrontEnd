@@ -30,8 +30,9 @@ import {
 import {AddCircleOutline} from "@mui/icons-material";
 
 
-const token = localStorage.getItem("accountId");
+
 function Account () {
+    const token = localStorage.getItem("accountId");
     const queryClient = useQueryClient();
     const [accountData, setAccountData] = useState({
         accountName : "",

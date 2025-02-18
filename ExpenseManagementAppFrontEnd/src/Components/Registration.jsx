@@ -89,11 +89,21 @@ const Registration = () => {
             return response.data
         },
         onSuccess: () => {
-            dispatch({type: "SET_SNACKBAR",payload: { open: true, message:  "User registered Successfully", severity: "success"}})
-            dispatch({type: "SET_LOGIN"})
+            dispatch({
+                type: "SET_SNACKBAR",
+                payload: { open: true, message: "User registered Successfully", severity: "success" }
+            });
+
+            let timeout = setTimeout(() => {
+                dispatch({ type: "SET_LOGIN" });
+            }, 3000);
+
+            return () => clearTimeout(timeout);
         },
+
         onError: (error) => {
             const errorToDisplay = error.response.data || "Registration failed";
+            dispatch({type: "RESET_USER"})
             dispatch({type: "SET_SNACKBAR",payload: { open: true, message:  errorToDisplay, severity: "error"}})
         }
     })

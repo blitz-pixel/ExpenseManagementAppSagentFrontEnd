@@ -7,9 +7,10 @@ import TransactionFormModal from "../Templates/TransactionFormModal.jsx";
 
 
 
-const id = localStorage.getItem("accountId");
+
 
 const Revenue = () => {
+    const id = localStorage.getItem("accountId");
     const queryClient = useQueryClient();
     const [snackbar, setSnackbar] = useState({ open: true, message: "", severity: "",code : 0 });
     const queries = useQueries({

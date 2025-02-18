@@ -16,8 +16,9 @@ import {
 import {useQuery} from "@tanstack/react-query";
 import {api} from "../Templates/axiosInstance.js";
 
-const accountId = localStorage.getItem("accountId");
+
 function Dashboard() {
+    const accountId = localStorage.getItem("accountId");
 
     const {data: transactions, isLoading,isError} = useQuery({
         queryKey: ["transactions", accountId],

@@ -29,7 +29,6 @@ import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 
 
 
-const accountId = localStorage.getItem("accountId") || "";
 
 const initialState = {
     showModal: false,
@@ -68,6 +67,7 @@ const reducer = (state, action) => {
 };
 
 const Category = () => {
+    const accountId = localStorage.getItem("accountId") || "";
     const queryClient = useQueryClient();
     const [category, dispatch] = useReducer(reducer, initialState);
     const { data : categories, isLoading : isFetchingCategory, isError: isCategoryError }  = useQuery({
